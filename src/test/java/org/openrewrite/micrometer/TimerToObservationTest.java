@@ -51,7 +51,17 @@ class TimerToObservationTest implements RewriteTest {
               }
               """,
             """
-              // TODO
+              import io.micrometer.observation.Observation;
+              import io.micrometer.observation.ObservationRegistry;
+              
+              class Test {
+                  private ObservationRegistry registry;
+                  
+                  void test(Runnable arg) {
+                      Observation.createNotStarted("my.timer", registry)
+                              .observe(arg);
+                  }
+              }
               """
           )
         );
@@ -79,7 +89,19 @@ class TimerToObservationTest implements RewriteTest {
               }
               """,
             """
-              // TODO
+              import io.micrometer.observation.Observation;
+              import io.micrometer.observation.ObservationRegistry;
+              
+              import java.util.function.Supplier;
+              
+              class Test {
+                  private ObservationRegistry registry;
+                  
+                  void test(Supplier<String> arg) {
+                      String result = Observation.createNotStarted("my.timer", registry)
+                              .observe(arg);
+                  }
+              }
               """
           )
         );
@@ -109,7 +131,19 @@ class TimerToObservationTest implements RewriteTest {
                   }
                   """,
                 """
-                  // TODO
+                  import io.micrometer.observation.Observation;
+                  import io.micrometer.observation.ObservationRegistry;
+                  
+                  import java.util.concurrent.Callable;
+                  
+                  class Test {
+                      private ObservationRegistry registry;
+                      
+                      void test(Callable<String> arg) {
+                          String result = Observation.createNotStarted("my.timer", registry)
+                                  .observe(arg);
+                      }
+                  }
                   """
               )
             );
@@ -139,7 +173,17 @@ class TimerToObservationTest implements RewriteTest {
                   }
                   """,
                 """
-                  // TODO
+                  import io.micrometer.observation.Observation;
+                  import io.micrometer.observation.ObservationRegistry;
+                  
+                  class Test {
+                      private ObservationRegistry registry;
+                  
+                      void test(Runnable arg) {
+                          Runnable result = Observation.createNotStarted("my.timer", registry)
+                                  .wrap(arg);
+                      }
+                  }
                   """
               )
             );
@@ -167,7 +211,19 @@ class TimerToObservationTest implements RewriteTest {
                   }
                   """,
                 """
-                  // TODO
+                  import io.micrometer.observation.Observation;
+                  import io.micrometer.observation.ObservationRegistry;
+                  
+                  import java.util.function.Supplier;
+                  
+                  class Test {
+                      private ObservationRegistry registry;
+                  
+                      void test(Supplier<String> arg) {
+                          Supplier<String> result = Observation.createNotStarted("my.timer", registry)
+                                  .wrap(arg);
+                      }
+                  }
                   """
               )
             );
@@ -195,7 +251,19 @@ class TimerToObservationTest implements RewriteTest {
                   }
                   """,
                 """
-                  // TODO
+                  import io.micrometer.observation.Observation;
+                  import io.micrometer.observation.ObservationRegistry;
+                  
+                  import java.util.concurrent.Callable;
+                  
+                  class Test {
+                      private ObservationRegistry registry;
+                  
+                      void test(Callable<String> arg) {
+                          Callable<String> result = Observation.createNotStarted("my.timer", registry)
+                                  .wrap(arg);
+                      }
+                  }
                   """
               )
             );

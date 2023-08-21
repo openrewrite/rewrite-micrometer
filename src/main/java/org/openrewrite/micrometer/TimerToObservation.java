@@ -19,8 +19,9 @@ import org.openrewrite.ExecutionContext;
 import org.openrewrite.Preconditions;
 import org.openrewrite.Recipe;
 import org.openrewrite.TreeVisitor;
-import org.openrewrite.java.JavaIsoVisitor;
+import org.openrewrite.java.*;
 import org.openrewrite.java.search.UsesMethod;
+import org.openrewrite.java.tree.Expression;
 import org.openrewrite.java.tree.J;
 import org.openrewrite.marker.Markup;
 
@@ -51,10 +52,59 @@ public class TimerToObservation extends Recipe {
                         )
                 ),
                 new JavaIsoVisitor<ExecutionContext>() {
+                    MethodMatcher recordMatcher = new MethodMatcher(TIMER + " record*(..)");
+                    MethodMatcher wrapMatcher = new MethodMatcher(TIMER + " wrap(..)");
+                    MethodMatcher registerMatcher = new MethodMatcher(TIMER + ".Builder register(io.micrometer.observation.ObservationRegistry)");
+                    MethodMatcher builderMatcher = new MethodMatcher(TIMER + " builder(String)");
                     @Override
-                    public J.ClassDeclaration visitClassDeclaration(J.ClassDeclaration classDecl, ExecutionContext executionContext) {
-                        J.ClassDeclaration cd = super.visitClassDeclaration(classDecl, executionContext);
-                        return Markup.info(cd, "TODO: Convert Timer to Observations");
+                    public J.CompilationUnit visitCompilationUnit(J.CompilationUnit compilationUnit, ExecutionContext executionContext) {
+                        ChangeType changeType = new ChangeType("io.micrometer.core.instrument.MeterRegistry", "io.micrometer.observation.ObservationRegistry", null);
+                        J.CompilationUnit cu = (J.CompilationUnit) changeType.getVisitor().visit(compilationUnit, executionContext);
+                        if (cu == null) {
+                            cu  = compilationUnit;
+                        }
+                        return super.visitCompilationUnit(cu, executionContext);
+                    }
+
+                    @Override
+                    public J.MethodInvocation visitMethodInvocation(J.MethodInvocation method, ExecutionContext executionContext) {
+                        J.MethodInvocation mi = super.visitMethodInvocation(method, executionContext);
+                        if (recordMatcher.matches(mi) || wrapMatcher.matches(mi)) {
+                            String methodName = mi.getSimpleName().equals("wrap")? "wrap" : "observe";
+                            Expression observable = mi.getArguments().get(0);
+                            if (mi.getSelect() instanceof J.MethodInvocation) {
+                                if (registerMatcher.matches(mi.getSelect())) {
+                                    J.MethodInvocation register = (J.MethodInvocation) mi.getSelect();
+                                    Expression registry = register.getArguments().get(0);
+                                    Expression maybeBuilder = register.getSelect();
+                                    while (maybeBuilder != null && !builderMatcher.matches(maybeBuilder)) {
+                                        if (maybeBuilder instanceof J.MethodInvocation) {
+                                            maybeBuilder = ((J.MethodInvocation) maybeBuilder).getSelect();
+                                        } else {
+                                            maybeBuilder = null;
+                                        }
+                                    }
+                                    if (maybeBuilder != null) {
+                                        J.MethodInvocation builder = (J.MethodInvocation) maybeBuilder;
+                                        Expression timerName = builder.getArguments().get(0);
+
+                                        JavaTemplate template = JavaTemplate
+                                                .builder("Observation.createNotStarted(#{any(java.lang.String)}, #{any()})\n.#{}(#{any()})")
+                                                .contextSensitive()
+                                                .javaParser(JavaParser.fromJavaVersion()
+                                                        .classpathFromResources(executionContext, "micrometer-observation"))
+                                                .imports("io.micrometer.observation.Observation")
+                                                .build();
+                                        J.MethodInvocation observation = template.apply(getCursor(), mi.getCoordinates().replace(), timerName, registry, methodName, observable);
+
+                                        maybeAddImport("io.micrometer.observation.Observation");
+                                        maybeRemoveImport("io.micrometer.core.instrument.Timer");
+                                        mi = autoFormat(observation, executionContext);
+                                    }
+                                }
+                            }
+                        }
+                        return mi;
                     }
                 });
     }
