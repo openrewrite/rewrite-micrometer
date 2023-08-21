@@ -16,11 +16,17 @@
 
 package org.openrewrite.micrometer;
 
+import io.micrometer.common.KeyValues;
+import io.micrometer.core.instrument.Tag;
+import io.micrometer.observation.Observation;
+import io.micrometer.observation.ObservationRegistry;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.openrewrite.java.JavaParser;
 import org.openrewrite.test.RecipeSpec;
 import org.openrewrite.test.RewriteTest;
+
+import java.util.List;
 
 import static org.openrewrite.java.Assertions.java;
 
@@ -45,8 +51,8 @@ class TimerToObservationTest implements RewriteTest {
               
                   void test(Runnable arg) {
                       Timer.builder("my.timer")
-                          .register(registry)
-                          .record(arg);
+                              .register(registry)
+                              .record(arg);
                   }
               }
               """,
@@ -68,6 +74,228 @@ class TimerToObservationTest implements RewriteTest {
     }
 
     @Test
+    void timerVariable() {
+        rewriteRun(
+          //language=java
+          java(
+            """
+              import io.micrometer.core.instrument.MeterRegistry;
+              import io.micrometer.core.instrument.Timer;
+              
+              class Test {
+                  private MeterRegistry registry;
+              
+                  void test(Runnable arg) {
+                      Timer t = Timer.builder("my.timer")
+                              .register(registry);
+                      t.record(arg);
+                  }
+              }
+              """,
+            """
+              import io.micrometer.observation.Observation;
+              import io.micrometer.observation.ObservationRegistry;
+              
+              class Test {
+                  private ObservationRegistry registry;
+                  
+                  void test(Runnable arg) {
+                      Observation t = Observation.createNotStarted("my.timer", registry);
+                      t.observe(arg);
+                  }
+              }
+              """
+          )
+        );
+    }
+
+    @Nested
+    class Tags {
+        @Test
+        void tag() {
+            rewriteRun(
+              //language=java
+              java(
+                """
+              import io.micrometer.core.instrument.MeterRegistry;
+              import io.micrometer.core.instrument.Timer;
+              
+              class Test {
+                  private MeterRegistry registry;
+              
+                  void test(Runnable arg) {
+                      Timer.builder("my.timer")
+                              .tag("key", "value")
+                              .register(registry)
+                              .record(arg);
+                  }
+              }
+              """,
+            """
+              import io.micrometer.observation.Observation;
+              import io.micrometer.observation.ObservationRegistry;
+              
+              class Test {
+                  private ObservationRegistry registry;
+                  
+                  void test(Runnable arg) {
+                      Observation.createNotStarted("my.timer", registry)
+                              .lowCardinalityKeyValue("key", "value")
+                              .observe(arg);
+                  }
+              }
+              """
+              )
+            );
+        }
+
+        @Test
+        void tagsVarArgs() {
+            rewriteRun(
+              //language=java
+              java(
+                """
+                  import io.micrometer.core.instrument.MeterRegistry;
+                  import io.micrometer.core.instrument.Timer;
+                  
+                  class Test {
+                      private MeterRegistry registry;
+                  
+                      void test(Runnable arg) {
+                          Timer.builder("my.timer")
+                                  .tags("key1", "value1", "key2", "value2")
+                                  .register(registry)
+                                  .record(arg);
+                      }
+                  }
+                  """,
+                """
+                  import io.micrometer.common.KeyValues;
+                  import io.micrometer.observation.Observation;
+                  import io.micrometer.observation.ObservationRegistry;
+    
+                  class Test {
+                      private ObservationRegistry registry;
+                      
+                      void test(Runnable arg) {
+                          Observation.createNotStarted("my.timer", registry)
+                                  .lowCardinalityKeyValues(KeyValues.of("key1", "value1", "key2", "value2"))
+                                  .observe(arg);
+                      }
+                  }
+                  """
+              )
+            );
+        }
+
+        @Test
+        void tagsArray() {
+            rewriteRun(
+              //language=java
+              java(
+                """
+                  import io.micrometer.core.instrument.MeterRegistry;
+                  import io.micrometer.core.instrument.Timer;
+                  
+                  class Test {
+                      private MeterRegistry registry;
+                  
+                      void test(Runnable arg) {
+                          String[] tags = new String[]{"key1", "value1", "key2", "value2"};
+                          Timer.builder("my.timer")
+                                  .tags(tags)
+                                  .register(registry)
+                                  .record(arg);
+                      }
+                  }
+                  """,
+                """
+                  import io.micrometer.common.KeyValues;
+                  import io.micrometer.observation.Observation;
+                  import io.micrometer.observation.ObservationRegistry;
+    
+                  class Test {
+                      private ObservationRegistry registry;
+                      
+                      void test(Runnable arg) {
+                          String[] tags = new String[]{"key1", "value1", "key2", "value2"};
+                          Observation.createNotStarted("my.timer", registry)
+                                  .lowCardinalityKeyValues(KeyValues.of(tags))
+                                  .observe(arg);
+                      }
+                  }
+                  """
+              )
+            );
+        }
+
+        private ObservationRegistry registry;
+
+        void test(Runnable arg) {
+            List<Tag> tags = List.of(
+              Tag.of("key1", "value1"),
+              Tag.of("key2", "value2")
+            );
+            Observation.createNotStarted("my.timer", registry)
+              .lowCardinalityKeyValues(KeyValues.of(tags, Tag::getKey, Tag::getValue))
+              .observe(arg);
+        }
+        @Test
+        void tagsCollection() {
+            rewriteRun(
+              //language=java
+              java(
+                """
+                  import io.micrometer.core.instrument.MeterRegistry;
+                  import io.micrometer.core.instrument.Tag;
+                  import io.micrometer.core.instrument.Timer;
+                  
+                  import java.util.List;
+
+                  class Test {
+                      private MeterRegistry registry;
+                  
+                      void test(Runnable arg) {
+                          List<Tag> tags = List.of(
+                                  Tag.of("key1", "value1"),
+                                  Tag.of("key2", "value2")
+                          );
+                          Timer.builder("my.timer")
+                                  .tags(tags)
+                                  .register(registry)
+                                  .record(arg);
+                      }
+                  }
+                  """,
+                """
+                  import io.micrometer.common.KeyValues;
+                  import io.micrometer.core.instrument.Tag;
+                  import io.micrometer.observation.Observation;
+                  import io.micrometer.observation.ObservationRegistry;
+                  
+                  import java.util.List;
+                  
+                  class Test {
+                      private ObservationRegistry registry;
+                      
+                      void test(Runnable arg) {
+                          List<Tag> tags = List.of(
+                                  Tag.of("key1", "value1"),
+                                  Tag.of("key2", "value2")
+                          );
+                          Observation.createNotStarted("my.timer", registry)
+                                  .lowCardinalityKeyValues(KeyValues.of(tags, Tag::getKey, Tag::getValue))
+                                  .observe(arg);
+                      }
+                  }
+                  """
+              )
+            );
+        }
+    }
+
+
+    @Test
     void recordSupplier() {
         rewriteRun(
           //language=java
@@ -83,8 +311,8 @@ class TimerToObservationTest implements RewriteTest {
               
                   void test(Supplier<String> arg) {
                       String result = Timer.builder("my.timer")
-                          .register(registry)
-                          .record(arg);
+                              .register(registry)
+                              .record(arg);
                   }
               }
               """,
@@ -125,8 +353,8 @@ class TimerToObservationTest implements RewriteTest {
                   
                       void test(Callable<String> arg) {
                           String result = Timer.builder("my.timer")
-                              .register(registry)
-                              .recordCallable(arg);
+                                  .register(registry)
+                                  .recordCallable(arg);
                       }
                   }
                   """,
@@ -205,8 +433,8 @@ class TimerToObservationTest implements RewriteTest {
                   
                       void test(Supplier<String> arg) {
                           Supplier<String> result = Timer.builder("my.timer")
-                              .register(registry)
-                              .wrap(arg);
+                                  .register(registry)
+                                  .wrap(arg);
                       }
                   }
                   """,
@@ -245,8 +473,8 @@ class TimerToObservationTest implements RewriteTest {
                   
                       void test(Callable<String> arg) {
                           Callable<String> result = Timer.builder("my.timer")
-                              .register(registry)
-                              .wrap(arg);
+                                  .register(registry)
+                                  .wrap(arg);
                       }
                   }
                   """,
