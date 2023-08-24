@@ -49,8 +49,8 @@ public class TimerToObservation extends Recipe {
         return Preconditions.check(
                 Preconditions.and(
                         Preconditions.or(
-                                new UsesMethod<>(TIMER + " record*(*)", false),
-                                new UsesMethod<>(TIMER + " wrap(*)", false)
+                                new UsesMethod<>(TIMER + " record*(..)", false),
+                                new UsesMethod<>(TIMER + " wrap(..)", false)
                         ),
                         Preconditions.and(
                                 Preconditions.not(new UsesMethod<>(TIMER + " record(java.time.Duration)", false)),
@@ -66,7 +66,7 @@ public class TimerToObservation extends Recipe {
 
                     private final ChangeType changeTypeRegistry = new ChangeType("io.micrometer.core.instrument.MeterRegistry", "io.micrometer.observation.ObservationRegistry", null);
                     private final ChangeType changeTypeTimer = new ChangeType("io.micrometer.core.instrument.Timer","io.micrometer.observation.Observation", null);
-                    private final ChangeMethodName changeRecord = new ChangeMethodName(OBSERVATION + " record*(*)", "observe", null, null);
+                    private final ChangeMethodName changeRecord = new ChangeMethodName(OBSERVATION + " record*(..)", "observe", null, null);
 
                     @Override
                     public J.CompilationUnit visitCompilationUnit(J.CompilationUnit compilationUnit, ExecutionContext executionContext) {
