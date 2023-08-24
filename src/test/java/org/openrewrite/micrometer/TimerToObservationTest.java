@@ -173,7 +173,7 @@ class TimerToObservationTest implements RewriteTest {
                   import io.micrometer.common.KeyValues;
                   import io.micrometer.observation.Observation;
                   import io.micrometer.observation.ObservationRegistry;
-    
+                  
                   class Test {
                       private ObservationRegistry registry;
                       
