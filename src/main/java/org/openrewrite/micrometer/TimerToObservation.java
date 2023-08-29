@@ -79,6 +79,11 @@ public class TimerToObservation extends Recipe {
                     }
 
                     @Override
+                    public J.MethodDeclaration visitMethodDeclaration(J.MethodDeclaration method, ExecutionContext executionContext) {
+                        return super.visitMethodDeclaration(method, executionContext);
+                    }
+
+                    @Override
                     public J.MethodInvocation visitMethodInvocation(J.MethodInvocation mi, ExecutionContext executionContext) {
                         if (registerMatcher.matches(mi)) {
                             Expression timerName = null;
@@ -101,12 +106,15 @@ public class TimerToObservation extends Recipe {
                                 else if (tagsIterableMatcher.matches(maybeBuilder)) {
                                     builder.add("\n.lowCardinalityKeyValues(KeyValues.of(#{any(Iterable)}, Tag::getKey, Tag::getValue))");
                                     parameters.addAll(builderMethod.getArguments());
+                                    maybeAddImport("io.micrometer.common.KeyValues");
+                                    maybeAddImport("io.micrometer.core.instrument.Tag");
                                 }
                                 else if (tagsMatcher.matches(maybeBuilder)) {
                                     String args = StringUtils.repeat("#{any(String)},", builderMethod.getArguments().size());
                                     args = args.substring(0, args.length() - 1);
                                     builder.add("\n.lowCardinalityKeyValues(KeyValues.of(" + args + "))");
                                     parameters.addAll(builderMethod.getArguments());
+                                    maybeAddImport("io.micrometer.common.KeyValues");
                                 }
                                 maybeBuilder = ((J.MethodInvocation) maybeBuilder).getSelect();
                             }
@@ -115,8 +123,6 @@ public class TimerToObservation extends Recipe {
                                 parameters.add(1, registry);
 
                                 maybeAddImport("io.micrometer.observation.Observation");
-                                maybeAddImport("io.micrometer.common.KeyValues");
-                                maybeAddImport("io.micrometer.core.instrument.Tag");
                                 maybeRemoveImport("io.micrometer.core.instrument.Timer");
 
                                 JavaTemplate template = JavaTemplate

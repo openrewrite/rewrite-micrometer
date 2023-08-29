@@ -16,17 +16,11 @@
 
 package org.openrewrite.micrometer;
 
-import io.micrometer.common.KeyValues;
-import io.micrometer.core.instrument.Tag;
-import io.micrometer.observation.Observation;
-import io.micrometer.observation.ObservationRegistry;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.openrewrite.java.JavaParser;
 import org.openrewrite.test.RecipeSpec;
 import org.openrewrite.test.RewriteTest;
-
-import java.util.List;
 
 import static org.openrewrite.java.Assertions.java;
 
@@ -102,6 +96,47 @@ class TimerToObservationTest implements RewriteTest {
                   void test(Runnable arg) {
                       Observation t = Observation.createNotStarted("my.timer", registry);
                       t.observe(arg);
+                  }
+              }
+              """
+          )
+        );
+    }
+
+    @Test
+    void keepComments() {
+        rewriteRun(
+          //language=java
+          java(
+            """
+              import io.micrometer.core.instrument.MeterRegistry;
+              import io.micrometer.core.instrument.Timer;
+              
+              class Test {
+                  private MeterRegistry registry;
+              
+                  void test(Runnable arg) {
+                      // Comments on Timer
+                      Timer.builder("my.timer")
+                              // Comments on register
+                              .register(registry)
+                              // Comments on record
+                              .record(arg);
+                  }
+              }
+              """,
+            """
+              import io.micrometer.observation.Observation;
+              import io.micrometer.observation.ObservationRegistry;
+              
+              class Test {
+                  private ObservationRegistry registry;
+                  
+                  void test(Runnable arg) {
+                      // Comments on Timer
+                      Observation.createNotStarted("my.timer", registry)
+                              // Comments on record
+                              .observe(arg);
                   }
               }
               """
@@ -229,17 +264,6 @@ class TimerToObservationTest implements RewriteTest {
             );
         }
 
-        private ObservationRegistry registry;
-
-        void test(Runnable arg) {
-            List<Tag> tags = List.of(
-              Tag.of("key1", "value1"),
-              Tag.of("key2", "value2")
-            );
-            Observation.createNotStarted("my.timer", registry)
-              .lowCardinalityKeyValues(KeyValues.of(tags, Tag::getKey, Tag::getValue))
-              .observe(arg);
-        }
         @Test
         void tagsCollection() {
             rewriteRun(
