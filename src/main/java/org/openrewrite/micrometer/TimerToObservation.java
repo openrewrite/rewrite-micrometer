@@ -92,12 +92,12 @@ public class TimerToObservation extends Recipe {
                                     timerName = builderMethod.getArguments().get(0);
                                 }
                                 else if (tagMatcher.matches(maybeBuilder)) {
-                                    builder.add("\n.lowCardinalityKeyValue(#{any(String)}, #{any(String)})");
+                                    builder.add("\n.highCardinalityKeyValue(#{any(String)}, #{any(String)})");
                                     parameters.add(builderMethod.getArguments().get(0));
                                     parameters.add(builderMethod.getArguments().get(1));
                                 }
                                 else if (tagsIterableMatcher.matches(maybeBuilder)) {
-                                    builder.add("\n.lowCardinalityKeyValues(KeyValues.of(#{any(Iterable)}, Tag::getKey, Tag::getValue))");
+                                    builder.add("\n.highCardinalityKeyValue(KeyValues.of(#{any(Iterable)}, Tag::getKey, Tag::getValue))");
                                     parameters.addAll(builderMethod.getArguments());
                                     maybeAddImport("io.micrometer.common.KeyValues");
                                     maybeAddImport("io.micrometer.core.instrument.Tag");
@@ -105,7 +105,7 @@ public class TimerToObservation extends Recipe {
                                 else if (tagsMatcher.matches(maybeBuilder)) {
                                     String args = StringUtils.repeat("#{any(String)},", builderMethod.getArguments().size());
                                     args = args.substring(0, args.length() - 1);
-                                    builder.add("\n.lowCardinalityKeyValues(KeyValues.of(" + args + "))");
+                                    builder.add("\n.highCardinalityKeyValue(KeyValues.of(" + args + "))");
                                     parameters.addAll(builderMethod.getArguments());
                                     maybeAddImport("io.micrometer.common.KeyValues");
                                 }

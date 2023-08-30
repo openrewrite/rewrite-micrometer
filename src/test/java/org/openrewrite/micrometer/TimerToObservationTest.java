@@ -175,7 +175,7 @@ class TimerToObservationTest implements RewriteTest {
                   
                   void test(Runnable arg) {
                       Observation.createNotStarted("my.timer", registry)
-                              .lowCardinalityKeyValue("key", "value")
+                              .highCardinalityKeyValue("key", "value")
                               .observe(arg);
                   }
               }
@@ -214,7 +214,7 @@ class TimerToObservationTest implements RewriteTest {
                       
                       void test(Runnable arg) {
                           Observation.createNotStarted("my.timer", registry)
-                                  .lowCardinalityKeyValues(KeyValues.of("key1", "value1", "key2", "value2"))
+                                  .highCardinalityKeyValues(KeyValues.of("key1", "value1", "key2", "value2"))
                                   .observe(arg);
                       }
                   }
@@ -255,7 +255,7 @@ class TimerToObservationTest implements RewriteTest {
                       void test(Runnable arg) {
                           String[] tags = new String[]{"key1", "value1", "key2", "value2"};
                           Observation.createNotStarted("my.timer", registry)
-                                  .lowCardinalityKeyValues(KeyValues.of(tags))
+                                  .highCardinalityKeyValues(KeyValues.of(tags))
                                   .observe(arg);
                       }
                   }
@@ -308,7 +308,7 @@ class TimerToObservationTest implements RewriteTest {
                                   Tag.of("key2", "value2")
                           );
                           Observation.createNotStarted("my.timer", registry)
-                                  .lowCardinalityKeyValues(KeyValues.of(tags, Tag::getKey, Tag::getValue))
+                                  .highCardinalityKeyValues(KeyValues.of(tags, Tag::getKey, Tag::getValue))
                                   .observe(arg);
                       }
                   }
