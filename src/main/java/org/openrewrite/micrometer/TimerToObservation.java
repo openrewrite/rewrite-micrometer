@@ -24,8 +24,6 @@ import org.openrewrite.java.*;
 import org.openrewrite.java.search.UsesMethod;
 import org.openrewrite.java.tree.Expression;
 import org.openrewrite.java.tree.J;
-import org.openrewrite.java.tree.Space;
-import org.openrewrite.marker.Markup;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -76,11 +74,6 @@ public class TimerToObservation extends Recipe {
                         cu = (J.CompilationUnit) changeRecord.getVisitor().visit(cu, executionContext);
                         assert cu != null;
                         return super.visitCompilationUnit(cu, executionContext);
-                    }
-
-                    @Override
-                    public J.MethodDeclaration visitMethodDeclaration(J.MethodDeclaration method, ExecutionContext executionContext) {
-                        return super.visitMethodDeclaration(method, executionContext);
                     }
 
                     @Override
