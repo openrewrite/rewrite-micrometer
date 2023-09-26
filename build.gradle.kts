@@ -19,4 +19,7 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-engine:latest.release")
 
     testImplementation("io.micrometer:micrometer-core:latest.release")
+    testImplementation("io.prometheus:simpleclient:latest.release")
+    testImplementation("io.micrometer:micrometer-registry-prometheus:latest.release")
+    testImplementation("com.google.guava:guava:latest.release")
 }
