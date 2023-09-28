@@ -22,12 +22,12 @@ import org.openrewrite.test.RewriteTest;
 
 import static org.openrewrite.java.Assertions.java;
 
-public class PrometheusMicromterMigrationTests implements RewriteTest {
+public class PrometheusMicrometerMigrationTests implements RewriteTest {
 
     public void defaults(RecipeSpec spec) {
         spec
-        //.recipe(new TimerToObservation())
-          .parser(JavaParser.fromJavaVersion().classpath("micrometer-core","simpleclient"));
+          .recipe(new TimerToObservation())
+          .parser(JavaParser.fromJavaVersion().classpath("micrometer-core", "simpleclient"));
     }
 
     @Test
@@ -38,10 +38,10 @@ public class PrometheusMicromterMigrationTests implements RewriteTest {
             """
               import io.prometheus.client.CollectorRegistry;
               import io.prometheus.client.Counter;
-              
+                            
               class Test {
                   private CollectorRegistry registry;
-              
+                            
                   void test() {
                        Counter counter = Counter.build("gets", "-")
                          .register(registry);
@@ -55,7 +55,7 @@ public class PrometheusMicromterMigrationTests implements RewriteTest {
             """
               import io.micrometer.core.instrument.Counter;
               import io.micrometer.core.instrument.MeterRegistry;
-              
+                            
               class Test {
                   private MeterRegistry registry;
                   
@@ -82,10 +82,10 @@ public class PrometheusMicromterMigrationTests implements RewriteTest {
             """
               import io.prometheus.client.CollectorRegistry;
               import io.prometheus.client.Summary;
-              
+                            
               class Test {
                   private CollectorRegistry registry;
-              
+                            
                   void test() {
                        Summary summary = Summary.build("call_times", "-")
                                                       .quantile(0.5, 0.05)
@@ -103,7 +103,7 @@ public class PrometheusMicromterMigrationTests implements RewriteTest {
             """
               import io.micrometer.core.instrument.DistributionSummary;
               import io.micrometer.core.instrument.MeterRegistry;
-              
+                            
               class Test {
                   private MeterRegistry registry;
                   
@@ -149,7 +149,7 @@ public class PrometheusMicromterMigrationTests implements RewriteTest {
             """
               import io.micrometer.core.instrument.DistributionSummary;
               import io.micrometer.core.instrument.MeterRegistry;
-              
+                            
               class Test {
                   private MeterRegistry registry;
                   
