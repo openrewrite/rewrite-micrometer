@@ -45,12 +45,14 @@ class PrometheusMicrometerMigrationTests implements RewriteTest {
                   private CollectorRegistry registry;
                             
                   void test() {
-                       Counter counter = Counter.build("gets", "-")
+                        Counter.build("gets", "-").create();
+                        Counter counter = Counter.build("gets", "-")
                          .register(registry);
                          
-                       counter.inc();
-                       counter.inc(5);
-                       counter.get();
+                        counter.inc();
+                        counter.inc(5);
+                        counter.get();
+                        counter.collect();
                   }
               }
               """,
@@ -62,13 +64,79 @@ class PrometheusMicrometerMigrationTests implements RewriteTest {
                   private MeterRegistry registry;
                   
                   void test() {
-                      Counter counter= Counter.builder("gets")
-                      .description("-")
-                      .register(registry);
+                        Counter.build("gets", "-").create();
+                        Counter counter= Counter.builder("gets")
+                        .description("-")
+                        .register(registry);
                       
-                      counter.increment();
-                      counter.increment(5);
-                      counter.count();
+                        counter.increment();
+                        counter.increment(5);
+                        counter.count();
+                        counter.measure();
+                  }
+              }
+              """
+          )
+        );
+    }
+
+    @Test
+    void counterWithLabels() {
+        rewriteRun(
+          //language=java
+          java(
+            """
+              import io.prometheus.client.CollectorRegistry;
+              import io.prometheus.client.Counter;
+                            
+              class TestProducer {
+                  private CollectorRegistry registry;
+                  
+                  public Counter requestsCounter = Counter.build("requests", "-")
+                         .labelNames("name1","name2")
+                         .register(registry);
+              }
+              """,
+            """
+              import io.micrometer.core.instrument.Counter;
+              import io.micrometer.core.instrument.MeterRegistry;
+                            
+              class TestProducer {
+                  private MeterRegistry registry;
+                  
+                  public Counter requestsCounter(String name1Value, String name2Value){
+                    return Counter.builder("requests")
+                        .description("-")
+                        .tags("name1",labels[0],"name2",labels[1])
+                        .register(producer.registry);
+                  }
+              }
+              """
+          ),
+          //language=java
+          java(
+            """                            
+              class TestConsumer {
+                  private TestProducer producer;
+                            
+                  void test() {
+                        producer.requestsCounter.labels("value1","value2").inc();
+                        producer.requestsCounter.labels("value1","value2").get();
+                        producer.requestsCounter.labels("value3","value4").inc();
+                        producer.requestsCounter.labels("value3","value4").get();
+                  }
+              }
+              """,
+            """     
+              class TestConsumer {
+                  private TestProducer producer;
+                            
+                  void test() {
+                        producer.requestsCounter("value1","value2").increment();
+                        producer.requestsCounter("value1","value2").measure();
+                        producer.requestsCounter("value3","value4").increment();
+                        producer.requestsCounter("value3","value4").measure();
+
                   }
               }
               """
