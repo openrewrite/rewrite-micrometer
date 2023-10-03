@@ -40,7 +40,7 @@ dependencies {
     testImplementation("io.micrometer:micrometer-registry-prometheus:latest.release")
     testImplementation("com.google.guava:guava:latest.release")
 
-    testRuntimeOnly("org.jetbrains.kotlin:kotlin-stlib-common:1.9.0")
+    testRuntimeOnly("org.jetbrains.kotlin:kotlin-stdlib-common:1.9.0")
     testRuntimeOnly("org.jetbrains.kotlin:kotlin-reflect:1.9.0")
     testRuntimeOnly("com.squareup.misk:misk-metrics:2023.09.27.194750-c3aa143")
 }

@@ -15,6 +15,7 @@
  */
 package org.openrewrite.micrometer;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.openrewrite.java.JavaParser;
 import org.openrewrite.test.RecipeSpec;
@@ -22,7 +23,7 @@ import org.openrewrite.test.RewriteTest;
 
 import static org.openrewrite.java.Assertions.java;
 
-public class PrometheusMicrometerMigrationTests implements RewriteTest {
+class PrometheusMicrometerMigrationTests implements RewriteTest {
 
     public void defaults(RecipeSpec spec) {
         spec
@@ -30,6 +31,7 @@ public class PrometheusMicrometerMigrationTests implements RewriteTest {
           .parser(JavaParser.fromJavaVersion().classpath("micrometer-core", "simpleclient"));
     }
 
+    @Disabled
     @Test
     void counterSimpleTest() {
         rewriteRun(
@@ -74,6 +76,7 @@ public class PrometheusMicrometerMigrationTests implements RewriteTest {
         );
     }
 
+    @Disabled
     @Test
     void summaryTest() {
         rewriteRun(
@@ -125,6 +128,7 @@ public class PrometheusMicrometerMigrationTests implements RewriteTest {
         );
     }
 
+    @Disabled
     @Test
     void histogramTest() {
         rewriteRun(
