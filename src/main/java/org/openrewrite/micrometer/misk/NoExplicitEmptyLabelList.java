@@ -1,6 +1,5 @@
 package org.openrewrite.micrometer.misk;
 
-import io.prometheus.client.SimpleCollector;
 import misk.metrics.v2.Metrics;
 import org.openrewrite.ExecutionContext;
 import org.openrewrite.Recipe;
@@ -13,13 +12,9 @@ import org.openrewrite.java.tree.TypeUtils;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-import static java.util.stream.Collectors.toList;
 import static kotlin.collections.CollectionsKt.listOf;
-import static org.openrewrite.java.JavaTemplate.compile;
+import static org.openrewrite.java.template.Semantics.expression;
 
 public class NoExplicitEmptyLabelList extends Recipe {
 
@@ -36,26 +31,18 @@ public class NoExplicitEmptyLabelList extends Recipe {
     @Override
     public TreeVisitor<?, ExecutionContext> getVisitor() {
 
-
         return new JavaIsoVisitor<>() {
             final List<JavaTemplate> hasEmptyLabel = Arrays.asList(
-                    compile(this, "emptyLabelCounter", (JavaTemplate.F3<? extends SimpleCollector<?>, Metrics, String, String>)
-                            (m, s, s1) -> m.counter(s, s1, listOf())).build(),
-                    compile(this, "emptyLabelGauge", (JavaTemplate.F3<? extends SimpleCollector<?>, Metrics, String, String>)
-                            (m, s, s1) -> m.gauge(s, s1, listOf())).build(),
-                    compile(this, "emptyLabelPeakGauge", (JavaTemplate.F3<? extends SimpleCollector<?>, Metrics, String, String>)
-                            (m, s, s1) -> m.peakGauge(s, s1, listOf())).build()
+                    expression(this, "emptyLabelCounter",
+                            (Metrics m, String s, String s1) -> m.counter(s, s1, listOf())).build(),
+                    expression(this, "emptyLabelGauge",
+                            (Metrics m, String s, String s1) -> m.gauge(s, s1, listOf())).build(),
+                    expression(this, "emptyLabelPeakGauge",
+                            (Metrics m, String s, String s1) -> m.peakGauge(s, s1, listOf())).build()
             );
 
             @Override
             public J.MethodInvocation visitMethodInvocation(J.MethodInvocation method, ExecutionContext ctx) {
-                AtomicInteger i = new AtomicInteger();
-                Stream.<JavaTemplate.F3<? extends SimpleCollector<?>, Metrics, String, String>>of(
-                        (m, s, s1) -> m.counter(s, s1, listOf()),
-                        (m, s, s1) -> m.gauge(s, s1, listOf()),
-                        (m, s, s1) -> m.peakGauge(s, s1, listOf())
-                ).map(f -> compile(this, "emptyLabel" + i.incrementAndGet(), f).build()).collect(toList());
-
                 if (method.getSelect() != null &&
                     TypeUtils.isOfClassType(method.getSelect().getType(), "misk.metrics.v2.Metrics") &&
                     hasEmptyLabel.stream().anyMatch(tmpl -> tmpl.matches(getCursor()))) {

@@ -17,16 +17,16 @@ dependencies {
     implementation("org.openrewrite.recipe:rewrite-java-dependencies:$rewriteVersion")
 
     annotationProcessor("org.openrewrite:rewrite-templating:latest.integration")
+    implementation("org.openrewrite:rewrite-templating:latest.integration")
     compileOnly("com.google.errorprone:error_prone_core:2.19.1:with-dependencies") {
         exclude("com.google.auto.service", "auto-service-annotations")
     }
 
-    // TODO compileOnly?
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-common:1.9.0")
-    implementation("org.jetbrains.kotlin:kotlin-reflect:1.9.0")
-    implementation("com.squareup.misk:misk-metrics:2023.09.27.194750-c3aa143")
-    implementation("io.micrometer:micrometer-core:latest.release")
-    implementation("io.prometheus:simpleclient:latest.release")
+    compileOnly("org.jetbrains.kotlin:kotlin-stdlib-common:1.9.0")
+    compileOnly("org.jetbrains.kotlin:kotlin-reflect:1.9.0")
+    compileOnly("com.squareup.misk:misk-metrics:2023.09.27.194750-c3aa143")
+    compileOnly("io.micrometer:micrometer-core:latest.release")
+    compileOnly("io.prometheus:simpleclient:latest.release")
 
     testImplementation("org.openrewrite:rewrite-java-17")
     testImplementation("org.openrewrite:rewrite-test")
@@ -39,4 +39,8 @@ dependencies {
 
     testImplementation("io.micrometer:micrometer-registry-prometheus:latest.release")
     testImplementation("com.google.guava:guava:latest.release")
+
+    testRuntimeOnly("org.jetbrains.kotlin:kotlin-stlib-common:1.9.0")
+    testRuntimeOnly("org.jetbrains.kotlin:kotlin-reflect:1.9.0")
+    testRuntimeOnly("com.squareup.misk:misk-metrics:2023.09.27.194750-c3aa143")
 }
