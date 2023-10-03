@@ -22,7 +22,7 @@ dependencies {
     }
 
     // TODO compileOnly?
-    implementation("org.jetbrains.kotlin:kotlin-stlib-common:1.9.0")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-common:1.9.0")
     implementation("org.jetbrains.kotlin:kotlin-reflect:1.9.0")
     implementation("com.squareup.misk:misk-metrics:2023.09.27.194750-c3aa143")
     implementation("io.micrometer:micrometer-core:latest.release")
