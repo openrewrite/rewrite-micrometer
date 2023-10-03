@@ -32,7 +32,6 @@ public class MigrateEmptyLabelMiskCounterTest implements RewriteTest {
             .classpath("misk-metrics", "kotlin-reflect", "kotlin-stdlib"));
     }
 
-    @Disabled
     @Test
     void migrateEmptyLabel() {
         //language=java
@@ -50,7 +49,7 @@ public class MigrateEmptyLabelMiskCounterTest implements RewriteTest {
               """,
             """
               import io.micrometer.core.instrument.Counter;
-              
+              import misk.metrics.v2.Metrics;
               import static kotlin.collections.CollectionsKt.listOf;
                             
               class Test {

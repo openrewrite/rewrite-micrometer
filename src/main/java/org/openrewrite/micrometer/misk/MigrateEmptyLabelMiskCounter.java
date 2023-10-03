@@ -17,16 +17,20 @@ package org.openrewrite.micrometer.misk;
 
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.Metrics;
-import org.openrewrite.*;
+import org.openrewrite.ExecutionContext;
+import org.openrewrite.Preconditions;
+import org.openrewrite.Recipe;
+import org.openrewrite.TreeVisitor;
+import org.openrewrite.internal.lang.Nullable;
 import org.openrewrite.java.JavaIsoVisitor;
 import org.openrewrite.java.MethodMatcher;
 import org.openrewrite.java.search.UsesType;
-import org.openrewrite.java.template.Semantics;
 import org.openrewrite.java.tree.J;
+import org.openrewrite.java.tree.JavaType;
+import org.openrewrite.java.tree.TypeUtils;
 
 import java.util.List;
 
-import static kotlin.collections.CollectionsKt.listOf;
 import static org.openrewrite.java.template.Semantics.expression;
 
 public class MigrateEmptyLabelMiskCounter extends Recipe {
@@ -50,15 +54,18 @@ public class MigrateEmptyLabelMiskCounter extends Recipe {
     public TreeVisitor<?, ExecutionContext> getVisitor() {
         return Preconditions.check(new UsesType<>("misk.metrics.v2.Metrics", true), new JavaIsoVisitor<>() {
             final MethodMatcher miskCounter = new MethodMatcher("misk.metrics.v2.Metrics counter(..)");
+            final MethodMatcher listOf = new MethodMatcher("kotlin.collections.CollectionsKt listOf()", true);
 
             @Override
             public J.MethodInvocation visitMethodInvocation(J.MethodInvocation method, ExecutionContext ctx) {
                 J.MethodInvocation m = super.visitMethodInvocation(method, ctx);
                 if (miskCounter.matches(method)) {
                     boolean emptyLabel = method.getArguments().size() == 2;
-                    if (method.getArguments().size() == 3) {
-                        emptyLabel = expression(this, "listOf", () -> listOf()).build()
-                                .matches(new Cursor(getCursor(), method.getArguments().get(2)));
+                    if (method.getArguments().size() == 3 && method.getArguments().get(2) instanceof J.MethodInvocation) {
+                        JavaType.Method arg2 = ((J.MethodInvocation) method.getArguments().get(2)).getMethodType();
+                        emptyLabel = arg2 != null &&
+                                     TypeUtils.isOfClassType(arg2.getDeclaringType(), "kotlin.collections.CollectionsKt") &&
+                                     arg2.getName().equals("listOf");
                     }
                     if (!emptyLabel) {
                         return m;
@@ -72,6 +79,7 @@ public class MigrateEmptyLabelMiskCounter extends Recipe {
                             method.getArguments().get(1));
 
                     maybeRemoveImport("misk.metrics.v2.Metrics");
+                    maybeAddImport("io.micrometer.core.instrument.Counter");
                 }
                 return m;
             }
