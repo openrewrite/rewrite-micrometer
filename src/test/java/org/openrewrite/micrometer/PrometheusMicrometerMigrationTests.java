@@ -15,13 +15,16 @@
  */
 package org.openrewrite.micrometer;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.openrewrite.java.JavaParser;
 import org.openrewrite.test.RecipeSpec;
 import org.openrewrite.test.RewriteTest;
 
-import static org.openrewrite.java.Assertions.java;
+import static org.openrewrite.kotlin.Assertions.kotlin;
 
 class PrometheusMicrometerMigrationTests implements RewriteTest {
 
@@ -33,210 +36,14 @@ class PrometheusMicrometerMigrationTests implements RewriteTest {
 
     @Disabled
     @Test
-    void counterSimpleTest() {
+    void migrationSystemTest() throws IOException {
         rewriteRun(
-          //language=java
-          java(
-            """
-              import io.prometheus.client.CollectorRegistry;
-              import io.prometheus.client.Counter;
-                            
-              class Test {
-                  private CollectorRegistry registry;
-                            
-                  void test() {
-                        Counter.build("gets", "-").create();
-                        Counter counter = Counter.build("gets", "-")
-                         .register(registry);
-                         
-                        counter.inc();
-                        counter.inc(5);
-                        counter.get();
-                        counter.collect();
-                  }
-              }
-              """,
-            """
-              import io.micrometer.core.instrument.Counter;
-              import io.micrometer.core.instrument.MeterRegistry;
-                            
-              class Test {
-                  private MeterRegistry registry;
-                  
-                  void test() {
-                        Counter.build("gets", "-").create();
-                        Counter counter= Counter.builder("gets")
-                        .description("-")
-                        .register(registry);
-                      
-                        counter.increment();
-                        counter.increment(5);
-                        counter.count();
-                        counter.measure();
-                  }
-              }
-              """
+          kotlin(
+            Files.readString(
+              Path.of("src/test/kotlin/org/openrewrite/micrometer/PrometheusSystemTest.kt")),
+            Files.readString(
+              Path.of("src/test/kotlin/org/openrewrite/micrometer/MicrometerSystemTest.kt"))
           )
         );
     }
-
-    @Test
-    void counterWithLabels() {
-        rewriteRun(
-          //language=java
-          java(
-            """
-              import io.prometheus.client.CollectorRegistry;
-              import io.prometheus.client.Counter;
-                            
-              class TestProducer {
-                  private CollectorRegistry registry;
-                  
-                  public Counter requestsCounter = Counter.build("requests", "-")
-                         .labelNames("name1","name2")
-                         .register(registry);
-              }
-              """,
-            """
-              import io.micrometer.core.instrument.Counter;
-              import io.micrometer.core.instrument.MeterRegistry;
-                            
-              class TestProducer {
-                  private MeterRegistry registry;
-                  
-                  public Counter requestsCounter(String name1Value, String name2Value){
-                    return Counter.builder("requests")
-                        .description("-")
-                        .tags("name1",labels[0],"name2",labels[1])
-                        .register(producer.registry);
-                  }
-              }
-              """
-          ),
-          //language=java
-          java(
-            """                            
-              class TestConsumer {
-                  private TestProducer producer;
-                            
-                  void test() {
-                        producer.requestsCounter.labels("value1","value2").inc();
-                        producer.requestsCounter.labels("value1","value2").get();
-                        producer.requestsCounter.labels("value3","value4").inc();
-                        producer.requestsCounter.labels("value3","value4").get();
-                  }
-              }
-              """,
-            """     
-              class TestConsumer {
-                  private TestProducer producer;
-                            
-                  void test() {
-                        producer.requestsCounter("value1","value2").increment();
-                        producer.requestsCounter("value1","value2").measure();
-                        producer.requestsCounter("value3","value4").increment();
-                        producer.requestsCounter("value3","value4").measure();
-
-                  }
-              }
-              """
-          )
-        );
-    }
-
-    @Disabled
-    @Test
-    void summaryTest() {
-        rewriteRun(
-          //language=java
-          java(
-            """
-              import io.prometheus.client.CollectorRegistry;
-              import io.prometheus.client.Summary;
-                            
-              class Test {
-                  private CollectorRegistry registry;
-                            
-                  void test() {
-                       Summary summary = Summary.build("call_times", "-")
-                                                      .quantile(0.5, 0.05)
-                                                      .quantile(0.75, 0.02)
-                                                      .quantile(0.95, 0.01)
-                                                      .quantile(0.99, 0.001)
-                                                      .quantile(0.999, 0.0001)
-                                                      .register(registry);
-                         
-                       summary.observe(100.0);
-                       summary.get();
-                  }
-              }
-              """,
-            """
-              import io.micrometer.core.instrument.DistributionSummary;
-              import io.micrometer.core.instrument.MeterRegistry;
-                            
-              class Test {
-                  private MeterRegistry registry;
-                  
-                  void test() {
-                      DistributionSummary summary = DistributionSummary.builder("call_times")
-                                                    .description("-")
-                                                    .publishPercentiles(0.5, 0.75, 0.95, 0.99, 0.999)
-                                                    .percentilePrecision(4)
-                                                    .distributionStatisticExpiry(Duration.ofMinutes(10))
-                                                    .distributionStatisticBufferLength(5)
-                                                    .register(registry);
-                      
-                      summary.record(100.0);
-                      summary.takeSnapshot();
-                  }
-              }
-              """
-          )
-        );
-    }
-
-    @Disabled
-    @Test
-    void histogramTest() {
-        rewriteRun(
-          //language=java
-          java(
-            """
-              import io.prometheus.client.CollectorRegistry;
-              import io.prometheus.client.Histogram;
-                            
-              class Test {
-                  private CollectorRegistry registry;
-                            
-                  void test() {
-                       Histogram histogram = Histogram.build("histogram", "-")
-                                                   .buckets(1.0, 2.0)
-                                                   .register(registry);
-                       
-                       histogram.observe(1.0);
-                  }
-              }
-              """,
-            """
-              import io.micrometer.core.instrument.DistributionSummary;
-              import io.micrometer.core.instrument.MeterRegistry;
-                            
-              class Test {
-                  private MeterRegistry registry;
-                  
-                  void test() {
-                      DistributionSummary histogram = DistributionSummary.builder("histogram")
-                                                    .description("-")
-                                                    .serviceLevelObjectives(1.0, 2.0)
-                                                    .register(registry);
-                                          
-                      histogram.record(1.0);
-                  }
-              }
-              """
-          )
-        );
-    }
-
 }
