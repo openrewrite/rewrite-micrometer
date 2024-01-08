@@ -67,17 +67,17 @@ public class TimerToObservation extends Recipe {
                     private final ChangeMethodName changeRecord = new ChangeMethodName(OBSERVATION + " record*(..)", "observe", null, null);
 
                     @Override
-                    public J.CompilationUnit visitCompilationUnit(J.CompilationUnit compilationUnit, ExecutionContext executionContext) {
+                    public J.CompilationUnit visitCompilationUnit(J.CompilationUnit compilationUnit, ExecutionContext ctx) {
                         J.CompilationUnit cu = compilationUnit;
-                        cu = (J.CompilationUnit) changeTypeRegistry.getVisitor().visit(cu, executionContext);
-                        cu = (J.CompilationUnit) changeTypeTimer.getVisitor().visit(cu, executionContext);
-                        cu = (J.CompilationUnit) changeRecord.getVisitor().visit(cu, executionContext);
+                        cu = (J.CompilationUnit) changeTypeRegistry.getVisitor().visit(cu, ctx);
+                        cu = (J.CompilationUnit) changeTypeTimer.getVisitor().visit(cu, ctx);
+                        cu = (J.CompilationUnit) changeRecord.getVisitor().visit(cu, ctx);
                         assert cu != null;
-                        return super.visitCompilationUnit(cu, executionContext);
+                        return super.visitCompilationUnit(cu, ctx);
                     }
 
                     @Override
-                    public J.MethodInvocation visitMethodInvocation(J.MethodInvocation mi, ExecutionContext executionContext) {
+                    public J.MethodInvocation visitMethodInvocation(J.MethodInvocation mi, ExecutionContext ctx) {
                         if (registerMatcher.matches(mi)) {
                             Expression timerName = null;
                             Expression registry = mi.getArguments().get(0);
@@ -123,7 +123,7 @@ public class TimerToObservation extends Recipe {
                                                 + String.join("", builder))
                                         .contextSensitive()
                                         .javaParser(JavaParser.fromJavaVersion()
-                                                .classpathFromResources(executionContext, "micrometer-observation", "micrometer-commons", "micrometer-core"))
+                                                .classpathFromResources(ctx, "micrometer-observation", "micrometer-commons", "micrometer-core"))
                                         .imports("io.micrometer.observation.Observation")
                                         .imports("io.micrometer.common.KeyValues")
                                         .imports("io.micrometer.core.instrument.Tag")
@@ -131,11 +131,11 @@ public class TimerToObservation extends Recipe {
 
                                 mi = autoFormat(
                                         template.apply(updateCursor(mi), mi.getCoordinates().replace(), parameters.toArray()),
-                                        executionContext
+                                        ctx
                                 );
                             }
                         }
-                        return super.visitMethodInvocation(mi, executionContext);
+                        return super.visitMethodInvocation(mi, ctx);
                     }
 
                 });
