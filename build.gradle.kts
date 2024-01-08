@@ -1,5 +1,6 @@
 plugins {
     id("org.openrewrite.build.recipe-library") version "latest.release"
+    kotlin("jvm") version "1.9.10"
 }
 
 group = "org.openrewrite.recipe"
@@ -22,8 +23,8 @@ dependencies {
         exclude("com.google.auto.service", "auto-service-annotations")
     }
 
-    compileOnly("org.jetbrains.kotlin:kotlin-stdlib-common:1.9.0")
-    compileOnly("org.jetbrains.kotlin:kotlin-reflect:1.9.0")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-common:1.9.10")
+    implementation("org.jetbrains.kotlin:kotlin-reflect:1.9.10")
     compileOnly("com.squareup.misk:misk-metrics:2023.09.27.194750-c3aa143")
     compileOnly("io.micrometer:micrometer-core:latest.release")
     compileOnly("io.prometheus:simpleclient:latest.release")
@@ -40,7 +41,6 @@ dependencies {
     testImplementation("io.micrometer:micrometer-registry-prometheus:latest.release")
     testImplementation("com.google.guava:guava:latest.release")
 
-    testRuntimeOnly("org.jetbrains.kotlin:kotlin-stdlib-common:1.9.0")
-    testRuntimeOnly("org.jetbrains.kotlin:kotlin-reflect:1.9.0")
+
     testRuntimeOnly("com.squareup.misk:misk-metrics:2023.09.27.194750-c3aa143")
 }
