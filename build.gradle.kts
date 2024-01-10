@@ -22,6 +22,8 @@ dependencies {
         exclude("com.google.auto.service", "auto-service-annotations")
     }
 
+    implementation("io.dropwizard.metrics:metrics-core:4.2.23")
+
     compileOnly("org.jetbrains.kotlin:kotlin-stdlib-common:1.9.0")
     compileOnly("org.jetbrains.kotlin:kotlin-reflect:1.9.0")
     compileOnly("com.squareup.misk:misk-metrics:2023.09.27.194750-c3aa143")
