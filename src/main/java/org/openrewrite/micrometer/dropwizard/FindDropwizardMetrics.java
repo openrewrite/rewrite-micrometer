@@ -25,7 +25,7 @@ import org.openrewrite.marker.SearchResult;
 import org.openrewrite.micrometer.table.DropwizardMetricsInUse;
 
 public class FindDropwizardMetrics extends Recipe {
-    transient final DropwizardMetricsInUse metrics = new DropwizardMetricsInUse(this);
+    final transient DropwizardMetricsInUse metrics = new DropwizardMetricsInUse(this);
 
     @Override
     public String getDisplayName() {

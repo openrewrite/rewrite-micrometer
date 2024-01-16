@@ -388,9 +388,13 @@ public class MicrometerPrometheusCompatabilityTest {
      */
     @Nullable Double summaryMean(CollectorRegistry registry, String... keyValues) {
         Double sum = summarySum(registry, keyValues);
-        if (sum == null) return null;
+        if (sum == null) {
+            return null;
+        }
         Double count = summaryCount(registry, keyValues);
-        if (count == null) return null;
+        if (count == null) {
+            return null;
+        }
         return sum / count;
     }
 
@@ -458,7 +462,7 @@ public class MicrometerPrometheusCompatabilityTest {
         return Collections.list(registry.metricFamilySamples()).stream().flatMap(it -> it.samples.stream());
     }
 
-    static abstract class MetricArguments implements ArgumentsProvider {
+    abstract static class MetricArguments implements ArgumentsProvider {
         public abstract Consumer<Double> prometheus(CollectorRegistry registry);
 
         public abstract Consumer<Double> micrometer(MeterRegistry registry);

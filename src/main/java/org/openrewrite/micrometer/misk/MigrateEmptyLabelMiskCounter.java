@@ -65,7 +65,7 @@ public class MigrateEmptyLabelMiskCounter extends Recipe {
                         JavaType.Method arg2 = ((J.MethodInvocation) method.getArguments().get(2)).getMethodType();
                         emptyLabel = arg2 != null &&
                                      TypeUtils.isOfClassType(arg2.getDeclaringType(), "kotlin.collections.CollectionsKt") &&
-                                     arg2.getName().equals("listOf");
+                                     "listOf".equals(arg2.getName());
                     }
                     if (!emptyLabel) {
                         return m;
