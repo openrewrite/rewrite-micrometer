@@ -21,6 +21,7 @@ import org.junit.jupiter.api.Test;
 import org.openrewrite.java.JavaParser;
 import org.openrewrite.test.RecipeSpec;
 import org.openrewrite.test.RewriteTest;
+import org.openrewrite.test.TypeValidation;
 
 import static org.openrewrite.java.Assertions.java;
 
@@ -267,6 +268,9 @@ class TimerToObservationTest implements RewriteTest {
         @Test
         void tagsCollection() {
             rewriteRun(
+              // MethodInvocation->MethodInvocation->MethodInvocation->Block->MethodDeclaration->Block->ClassDeclaration->CompilationUnit
+              ///*~~(MethodInvocation type is missing or malformed)~~>*/KeyValues.of(tags, Tag::getKey, Tag::getValue)
+              spec -> spec.typeValidationOptions(TypeValidation.none()),
               //language=java
               java(
                 """
