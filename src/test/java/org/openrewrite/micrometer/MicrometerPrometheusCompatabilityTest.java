@@ -41,7 +41,7 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class MicrometerPrometheusCompatabilityTest {
+class MicrometerPrometheusCompatabilityTest {
     CollectorRegistry micrometerRegistry = new CollectorRegistry(true);
     CollectorRegistry promRegistry = new CollectorRegistry(true);
     MeterRegistry wrappedMicrometerRegistry = new PrometheusMeterRegistry(
