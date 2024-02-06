@@ -16,6 +16,7 @@
 package org.openrewrite.micrometer.dropwizard;
 
 import org.junit.jupiter.api.Test;
+import org.openrewrite.DocumentExample;
 import org.openrewrite.java.JavaParser;
 import org.openrewrite.test.RecipeSpec;
 import org.openrewrite.test.RewriteTest;
@@ -30,6 +31,7 @@ public class FindDropwizardMetricsTest implements RewriteTest {
           .parser(JavaParser.fromJavaVersion().classpath("metrics-core"));
     }
 
+    @DocumentExample
     @Test
     void findDropwizardMetrics() {
         rewriteRun(

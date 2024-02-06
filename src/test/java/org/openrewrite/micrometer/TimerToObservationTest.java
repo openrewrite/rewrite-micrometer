@@ -18,6 +18,7 @@ package org.openrewrite.micrometer;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.openrewrite.DocumentExample;
 import org.openrewrite.java.JavaParser;
 import org.openrewrite.test.RecipeSpec;
 import org.openrewrite.test.RewriteTest;
@@ -32,6 +33,7 @@ class TimerToObservationTest implements RewriteTest {
           .parser(JavaParser.fromJavaVersion().classpath("micrometer-core"));
     }
 
+    @DocumentExample
     @Test
     void recordRunnable() {
         rewriteRun(
@@ -323,6 +325,7 @@ class TimerToObservationTest implements RewriteTest {
     }
 
 
+    @DocumentExample
     @Test
     void recordSupplier() {
         rewriteRun(
