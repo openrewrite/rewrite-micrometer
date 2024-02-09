@@ -23,7 +23,7 @@ import org.openrewrite.test.RewriteTest;
 
 import static org.openrewrite.java.Assertions.java;
 
-public class MigrateEmptyLabelMiskCounterTest implements RewriteTest {
+class MigrateEmptyLabelMiskCounterTest implements RewriteTest {
 
     @Override
     public void defaults(RecipeSpec spec) {

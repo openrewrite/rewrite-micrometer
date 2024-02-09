@@ -25,7 +25,7 @@ import org.openrewrite.test.RewriteTest;
 import static org.openrewrite.java.Assertions.java;
 import static org.openrewrite.kotlin.Assertions.kotlin;
 
-public class NoExplicitEmptyLabelListTest implements RewriteTest {
+class NoExplicitEmptyLabelListTest implements RewriteTest {
 
     @Override
     public void defaults(RecipeSpec spec) {
