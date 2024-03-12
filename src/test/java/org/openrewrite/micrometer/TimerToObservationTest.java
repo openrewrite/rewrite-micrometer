@@ -28,6 +28,7 @@ import static org.openrewrite.java.Assertions.java;
 
 class TimerToObservationTest implements RewriteTest {
 
+    @Override
     public void defaults(RecipeSpec spec) {
         spec.recipe(new TimerToObservation())
           .parser(JavaParser.fromJavaVersion().classpath("micrometer-core"));
