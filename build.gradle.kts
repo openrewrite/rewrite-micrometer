@@ -11,6 +11,7 @@ tasks.getByName<JavaCompile>("compileJava") {
 }
 
 val rewriteVersion = rewriteRecipe.rewriteVersion.get()
+val micrometerVersion = "1.12.+"
 dependencies {
     implementation(platform("org.openrewrite:rewrite-bom:$rewriteVersion"))
     implementation("org.openrewrite:rewrite-java")
@@ -27,7 +28,7 @@ dependencies {
     compileOnly("org.jetbrains.kotlin:kotlin-stdlib-common:1.9.0")
     compileOnly("org.jetbrains.kotlin:kotlin-reflect:1.9.0")
     compileOnly("com.squareup.misk:misk-metrics:2023.09.27.194750-c3aa143")
-    compileOnly("io.micrometer:micrometer-core:latest.release")
+    compileOnly("io.micrometer:micrometer-core:${micrometerVersion}")
     compileOnly("io.prometheus:simpleclient:latest.release")
 
     testImplementation("org.openrewrite:rewrite-java-17")
@@ -39,7 +40,7 @@ dependencies {
 
     testImplementation("org.junit.jupiter:junit-jupiter-engine:latest.release")
 
-    testImplementation("io.micrometer:micrometer-registry-prometheus:latest.release")
+    testImplementation("io.micrometer:micrometer-registry-prometheus:${micrometerVersion}")
     testImplementation("com.google.guava:guava:latest.release")
 
     testRuntimeOnly("org.jetbrains.kotlin:kotlin-stdlib-common:1.9.0")
