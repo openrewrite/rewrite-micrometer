@@ -34,8 +34,8 @@ import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.openrewrite.internal.lang.Nullable;
 
 import java.time.Duration;
-import java.util.Enumeration;
 import java.util.*;
+import java.util.Enumeration;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
