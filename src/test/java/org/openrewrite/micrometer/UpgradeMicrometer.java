@@ -22,8 +22,7 @@ import org.openrewrite.config.Environment;
 import org.openrewrite.test.RecipeSpec;
 import org.openrewrite.test.RewriteTest;
 
-import java.util.regex.Pattern;
-
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.openrewrite.maven.Assertions.pomXml;
 
 class UpgradeMicrometer implements RewriteTest {
@@ -42,8 +41,8 @@ class UpgradeMicrometer implements RewriteTest {
         @DocumentExample
         void maven() {
             rewriteRun(
-              //language=xml
               pomXml(
+                //language=xml
                 """
                   <?xml version="1.0" encoding="UTF-8"?>
                   <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -61,23 +60,14 @@ class UpgradeMicrometer implements RewriteTest {
                     </dependencies>
                   </project>
                   """,
-                spec -> spec.after(actual -> """
-                  <?xml version="1.0" encoding="UTF-8"?>
-                  <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-                    <modelVersion>4.0.0</modelVersion>
-                    <groupId>com.example</groupId>
-                    <artifactId>demo</artifactId>
-                    <version>0.0.1-SNAPSHOT</version>
-                    <dependencies>
-                      <dependency>
-                        <groupId>io.micrometer</groupId>
-                        <artifactId>micrometer-core</artifactId>
-                        <version>%s</version>
-                      </dependency>
-                    </dependencies>
-                  </project>
-                  """.formatted(Pattern.compile("<version>(1\\.1[1-9]\\.\\d+)</version>").matcher(actual).results().findFirst().orElseThrow().group(1)))));
+                spec -> spec.after(actual -> {
+                    assertThat(actual)
+                      .as("Any version of Micrometer above 1.10.x")
+                      .containsPattern("<version>1\\.1[1-9]\\.\\d+</version>");
+                    return actual;
+                })
+              )
+            );
         }
     }
 }
