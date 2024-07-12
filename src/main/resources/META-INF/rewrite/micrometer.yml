@@ -19,7 +19,4 @@ name: org.openrewrite.micrometer.UpgradeMicrometer
 displayName: Upgrade Micrometer
 description: This recipe will apply changes commonly needed when migrating Micrometer.
 recipeList:
-  - org.openrewrite.java.dependencies.UpgradeDependencyVersion:
-      groupId: io.micrometer
-      artifactId: micrometer-core
-      newVersion: 1.x
+  - org.openrewrite.micrometer.UpgradeMicrometer13
