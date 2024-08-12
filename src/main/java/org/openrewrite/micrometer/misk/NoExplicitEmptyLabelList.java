@@ -15,21 +15,18 @@
  */
 package org.openrewrite.micrometer.misk;
 
-import misk.metrics.v2.Metrics;
 import org.openrewrite.ExecutionContext;
 import org.openrewrite.Recipe;
 import org.openrewrite.TreeVisitor;
 import org.openrewrite.internal.ListUtils;
 import org.openrewrite.java.JavaIsoVisitor;
+import org.openrewrite.java.JavaParser;
 import org.openrewrite.java.JavaTemplate;
 import org.openrewrite.java.tree.J;
 import org.openrewrite.java.tree.TypeUtils;
 
 import java.util.Arrays;
 import java.util.List;
-
-import static kotlin.collections.CollectionsKt.listOf;
-import static org.openrewrite.java.template.Semantics.expression;
 
 public class NoExplicitEmptyLabelList extends Recipe {
 
@@ -46,15 +43,20 @@ public class NoExplicitEmptyLabelList extends Recipe {
     @Override
     public TreeVisitor<?, ExecutionContext> getVisitor() {
 
-        return new JavaIsoVisitor<>() {
+        return new JavaIsoVisitor<ExecutionContext>() {
             final List<JavaTemplate> hasEmptyLabel = Arrays.asList(
-                    expression(this, "emptyLabelCounter",
-                            (Metrics m, String s, String s1) -> m.counter(s, s1, listOf())).build(),
-                    expression(this, "emptyLabelGauge",
-                            (Metrics m, String s, String s1) -> m.gauge(s, s1, listOf())).build(),
-                    expression(this, "emptyLabelPeakGauge",
-                            (Metrics m, String s, String s1) -> m.peakGauge(s, s1, listOf())).build()
-            );
+                    JavaTemplate.builder("#{m:any(misk.metrics.v2.Metrics)}.counter(#{s:any(java.lang.String)}, #{s1:any(java.lang.String)}, listOf())")
+                            .staticImports("kotlin.collections.CollectionsKt.listOf")
+                            .javaParser(JavaParser.fromJavaVersion().classpath(JavaParser.runtimeClasspath()))
+                            .build(),
+                    JavaTemplate.builder("#{m:any(misk.metrics.v2.Metrics)}.gauge(#{s:any(java.lang.String)}, #{s1:any(java.lang.String)}, listOf())")
+                            .staticImports("kotlin.collections.CollectionsKt.listOf")
+                            .javaParser(JavaParser.fromJavaVersion().classpath(JavaParser.runtimeClasspath()))
+                            .build(),
+                    JavaTemplate.builder("#{m:any(misk.metrics.v2.Metrics)}.peakGauge(#{s:any(java.lang.String)}, #{s1:any(java.lang.String)}, listOf())")
+                            .staticImports("kotlin.collections.CollectionsKt.listOf")
+                            .javaParser(JavaParser.fromJavaVersion().classpath(JavaParser.runtimeClasspath()))
+                            .build());
 
             @Override
             public J.MethodInvocation visitMethodInvocation(J.MethodInvocation method, ExecutionContext ctx) {

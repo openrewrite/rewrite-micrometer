@@ -5,11 +5,6 @@ plugins {
 group = "org.openrewrite.recipe"
 description = "Micrometer Migration"
 
-tasks.getByName<JavaCompile>("compileJava") {
-    // minimum required for misk use in refaster-style templates
-    options.release.set(11)
-}
-
 val rewriteVersion = rewriteRecipe.rewriteVersion.get()
 val micrometerVersion = "1.12.+"
 dependencies {
@@ -27,7 +22,6 @@ dependencies {
 
     compileOnly("org.jetbrains.kotlin:kotlin-stdlib-common:1.9.0")
     compileOnly("org.jetbrains.kotlin:kotlin-reflect:1.9.0")
-    compileOnly("com.squareup.misk:misk-metrics:2023.09.27.194750-c3aa143")
     compileOnly("io.micrometer:micrometer-core:${micrometerVersion}")
     compileOnly("io.prometheus:simpleclient:latest.release")
 

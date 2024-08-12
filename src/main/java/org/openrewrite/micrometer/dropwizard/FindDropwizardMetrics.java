@@ -42,7 +42,7 @@ public class FindDropwizardMetrics extends Recipe {
         MethodMatcher counter = new MethodMatcher("com.codahale.metrics.MetricRegistry counter(..)");
         MethodMatcher gauge = new MethodMatcher("com.codahale.metrics.MetricRegistry gauge(..)");
 
-        return new JavaIsoVisitor<>() {
+        return new JavaIsoVisitor<ExecutionContext>() {
             @Override
             public J.MethodInvocation visitMethodInvocation(J.MethodInvocation method, ExecutionContext ctx) {
                 if (counter.matches(method) || gauge.matches(method)) {
