@@ -43,7 +43,7 @@ class NoExplicitEmptyLabelListTest implements RewriteTest {
             """
               import misk.metrics.v2.Metrics;
               import static kotlin.collections.CollectionsKt.listOf;
-                            
+
               class Test {
                 void test(Metrics metrics) {
                     metrics.counter("counter", "description", listOf());
@@ -55,7 +55,7 @@ class NoExplicitEmptyLabelListTest implements RewriteTest {
             """
               import misk.metrics.v2.Metrics;
               import static kotlin.collections.CollectionsKt.listOf;
-                            
+
               class Test {
                 void test(Metrics metrics) {
                     metrics.counter("counter", "description");

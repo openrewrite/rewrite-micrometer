@@ -51,9 +51,8 @@ public class MigrateEmptyLabelMiskCounter extends Recipe {
 
     @Override
     public TreeVisitor<?, ExecutionContext> getVisitor() {
-        return Preconditions.check(new UsesType<>("misk.metrics.v2.Metrics", true), new JavaIsoVisitor<>() {
+        return Preconditions.check(new UsesType<>("misk.metrics.v2.Metrics", true), new JavaIsoVisitor<ExecutionContext>() {
             final MethodMatcher miskCounter = new MethodMatcher("misk.metrics.v2.Metrics counter(..)");
-            final MethodMatcher listOf = new MethodMatcher("kotlin.collections.CollectionsKt listOf()", true);
 
             @Override
             public J.MethodInvocation visitMethodInvocation(J.MethodInvocation method, ExecutionContext ctx) {
