@@ -15,7 +15,7 @@
 #
 ---
 type: specs.openrewrite.org/v1beta/recipe
-name: org.openrewrite.micrometer.UpgradeMicrometer13
+name: org.openrewrite.micrometer.UpgradeMicrometer_1_13
 displayName: Migrate to Micrometer 1.13
 description: >-
   Migrate applications to the latest Micrometer 1.13 release. This recipe will modify an

@@ -28,7 +28,7 @@ class UpgradeMicrometer13Test implements RewriteTest {
     public void defaults(RecipeSpec spec) {
         spec.recipeFromResource(
           "/META-INF/rewrite/micrometer-13.yml",
-          "org.openrewrite.micrometer.UpgradeMicrometer13");
+          "org.openrewrite.micrometer.UpgradeMicrometer_1_13");
     }
 
     @Test

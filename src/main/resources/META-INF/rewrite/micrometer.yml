@@ -19,4 +19,4 @@ name: org.openrewrite.micrometer.UpgradeMicrometer
 displayName: Upgrade Micrometer
 description: This recipe will apply changes commonly needed when migrating Micrometer.
 recipeList:
-  - org.openrewrite.micrometer.UpgradeMicrometer13
+  - org.openrewrite.micrometer.UpgradeMicrometer_1_13
