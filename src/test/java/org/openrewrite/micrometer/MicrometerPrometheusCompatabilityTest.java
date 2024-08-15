@@ -25,13 +25,13 @@ import io.micrometer.prometheus.PrometheusMeterRegistry;
 import io.prometheus.client.*;
 import io.prometheus.client.Collector.MetricFamilySamples.Sample;
 import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
-import org.openrewrite.internal.lang.Nullable;
 
 import java.time.Duration;
 import java.util.*;
