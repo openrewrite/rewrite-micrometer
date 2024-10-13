@@ -50,7 +50,7 @@ public class FindDropwizardMetrics extends Recipe {
                     metrics.insertRow(ctx, new DropwizardMetricsInUse.Row(
                             getCursor().firstEnclosingOrThrow(J.CompilationUnit.class).getSourcePath().toString(),
                             metricType,
-                            method.printTrimmed(getCursor())
+                            method.printTrimmed(getCursor().getParent())
                     ));
                     return SearchResult.found(method, metricType);
                 }

@@ -18,9 +18,11 @@ package org.openrewrite.micrometer.dropwizard;
 import org.junit.jupiter.api.Test;
 import org.openrewrite.DocumentExample;
 import org.openrewrite.java.JavaParser;
+import org.openrewrite.micrometer.table.DropwizardMetricsInUse;
 import org.openrewrite.test.RecipeSpec;
 import org.openrewrite.test.RewriteTest;
 
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.openrewrite.java.Assertions.java;
 
 class FindDropwizardMetricsTest implements RewriteTest {
@@ -35,6 +37,9 @@ class FindDropwizardMetricsTest implements RewriteTest {
     @Test
     void findDropwizardMetrics() {
         rewriteRun(
+          spec -> spec.dataTable(DropwizardMetricsInUse.Row.class, list ->
+            assertThat(list).anySatisfy(row ->
+              assertThat(row.getMetricCode()).isEqualTo("registry.counter(\"my.counter\")"))),
           //language=java
           java(
             """
