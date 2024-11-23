@@ -23,10 +23,13 @@ import org.openrewrite.java.JavaIsoVisitor;
 import org.openrewrite.java.JavaParser;
 import org.openrewrite.java.JavaTemplate;
 import org.openrewrite.java.tree.J;
+import org.openrewrite.java.tree.JavaType;
 import org.openrewrite.java.tree.TypeUtils;
 
 import java.util.Arrays;
 import java.util.List;
+
+import static java.util.Collections.emptyList;
 
 public class NoExplicitEmptyLabelList extends Recipe {
 
@@ -42,7 +45,6 @@ public class NoExplicitEmptyLabelList extends Recipe {
 
     @Override
     public TreeVisitor<?, ExecutionContext> getVisitor() {
-
         return new JavaIsoVisitor<ExecutionContext>() {
             final List<JavaTemplate> hasEmptyLabel = Arrays.asList(
                     JavaTemplate.builder("#{m:any(misk.metrics.v2.Metrics)}.counter(#{s:any(java.lang.String)}, #{s1:any(java.lang.String)}, listOf())")
@@ -63,7 +65,14 @@ public class NoExplicitEmptyLabelList extends Recipe {
                 if (method.getSelect() != null &&
                     TypeUtils.isOfClassType(method.getSelect().getType(), "misk.metrics.v2.Metrics") &&
                     hasEmptyLabel.stream().anyMatch(tmpl -> tmpl.matches(getCursor()))) {
-                    return method.withArguments(ListUtils.map(method.getArguments(), (i, a) -> i == 2 ? null : a));
+                    JavaType.Method methodType = method.getMethodType();
+                    if (methodType != null) {
+                        methodType = methodType.withParameterNames(emptyList()).withParameterTypes(emptyList());
+                    }
+                    return method
+                            .withArguments(ListUtils.map(method.getArguments(), (i, a) -> i == 2 ? null : a))
+                            .withMethodType(methodType)
+                            .withName(method.getName().withType(methodType));
                 }
                 return super.visitMethodInvocation(method, ctx);
             }
