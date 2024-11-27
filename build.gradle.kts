@@ -30,6 +30,7 @@ dependencies {
     testImplementation("org.openrewrite:rewrite-gradle")
     testImplementation("org.openrewrite:rewrite-maven")
 
+    testImplementation("org.openrewrite:rewrite-test")
     testImplementation("org.openrewrite:rewrite-kotlin:latest.release")
 
     testImplementation("org.junit.jupiter:junit-jupiter-engine:latest.release")
