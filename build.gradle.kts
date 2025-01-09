@@ -5,16 +5,16 @@ plugins {
 group = "org.openrewrite.recipe"
 description = "Micrometer Migration"
 
-val rewriteVersion = rewriteRecipe.rewriteVersion.get()
+val rewriteVersion = "latest.release"
 val micrometerVersion = "1.12.+"
 dependencies {
-    implementation(platform("org.openrewrite:rewrite-bom:$rewriteVersion"))
+    implementation(platform("org.openrewrite:rewrite-bom:8.41.1"))
     implementation("org.openrewrite:rewrite-java")
-    implementation("org.openrewrite.recipe:rewrite-java-dependencies:$rewriteVersion")
+    implementation("org.openrewrite.recipe:rewrite-java-dependencies:1.24.1")
 
     annotationProcessor("org.openrewrite:rewrite-templating:latest.integration")
     implementation("org.openrewrite:rewrite-templating:latest.integration")
-    compileOnly("com.google.errorprone:error_prone_core:2.+:with-dependencies") {
+    compileOnly("com.google.errorprone:error_prone_core:2.+") {
         exclude("com.google.auto.service", "auto-service-annotations")
     }
 
