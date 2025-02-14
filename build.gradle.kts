@@ -6,6 +6,12 @@ plugins {
 group = "org.openrewrite.recipe"
 description = "Micrometer Migration"
 
+recipeDependencies {
+    parserClasspath("io.micrometer:micrometer-commons:1.11.3")
+    parserClasspath("io.micrometer:micrometer-core:1.11.3")
+    parserClasspath("io.micrometer:micrometer-observation:1.11.3")
+}
+
 val rewriteVersion = rewriteRecipe.rewriteVersion.get()
 val micrometerVersion = "1.12.+"
 dependencies {
