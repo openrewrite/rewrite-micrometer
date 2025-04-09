@@ -62,8 +62,8 @@ public class TimerToObservation extends Recipe {
                     private final MethodMatcher tagsMatcher = new MethodMatcher(TIMER + ".Builder tags(..)");
                     private final MethodMatcher tagsIterableMatcher = new MethodMatcher(TIMER + ".Builder tags(java.lang.Iterable)");
 
-                    private final ChangeType changeTypeRegistry = new ChangeType("io.micrometer.core.instrument.MeterRegistry", "io.micrometer.observation.ObservationRegistry", null);
-                    private final ChangeType changeTypeTimer = new ChangeType("io.micrometer.core.instrument.Timer","io.micrometer.observation.Observation", null);
+                    private final ChangeType changeTypeRegistry = new ChangeType("io.micrometer.core.instrument.MeterRegistry", "io.micrometer.observation.ObservationRegistry", null, null);
+                    private final ChangeType changeTypeTimer = new ChangeType("io.micrometer.core.instrument.Timer","io.micrometer.observation.Observation", null, null);
                     private final ChangeMethodName changeRecord = new ChangeMethodName(OBSERVATION + " record*(..)", "observe", null, null);
 
                     @Override
