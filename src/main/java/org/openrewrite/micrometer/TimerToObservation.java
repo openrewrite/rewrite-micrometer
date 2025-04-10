@@ -97,7 +97,7 @@ public class TimerToObservation extends Recipe {
                                     parameters.add(builderMethod.getArguments().get(1));
                                 }
                                 else if (tagsIterableMatcher.matches(maybeBuilder)) {
-                                    builder.add("\n.highCardinalityKeyValues(KeyValues.of(#{any(Iterable)}, Tag::getKey, Tag::getValue))");
+                                    builder.add("\n.highCardinalityKeyValues(KeyValues.of(#{any(java.lang.Iterable)}, Tag::getKey, Tag::getValue))");
                                     parameters.addAll(builderMethod.getArguments());
                                     maybeAddImport("io.micrometer.common.KeyValues");
                                     maybeAddImport("io.micrometer.core.instrument.Tag");
