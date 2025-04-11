@@ -21,14 +21,13 @@ dependencies {
 
     annotationProcessor("org.openrewrite:rewrite-templating:latest.integration")
     implementation("org.openrewrite:rewrite-templating:latest.integration")
-    compileOnly("com.google.errorprone:error_prone_core:2.+:with-dependencies") {
+    compileOnly("com.google.errorprone:error_prone_core:2.+") {
         exclude("com.google.auto.service", "auto-service-annotations")
+        exclude("io.github.eisop","dataflow-errorprone")
     }
 
     implementation("io.dropwizard.metrics:metrics-core:4.2.23")
 
-    compileOnly("org.jetbrains.kotlin:kotlin-stdlib-common:1.9.0")
-    compileOnly("org.jetbrains.kotlin:kotlin-reflect:1.9.0")
     compileOnly("io.micrometer:micrometer-core:${micrometerVersion}")
     compileOnly("io.prometheus:simpleclient:latest.release")
 
