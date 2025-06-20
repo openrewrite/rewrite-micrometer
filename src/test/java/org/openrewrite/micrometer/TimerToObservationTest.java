@@ -325,7 +325,6 @@ class TimerToObservationTest implements RewriteTest {
     }
 
 
-    @DocumentExample
     @Test
     void recordSupplier() {
         rewriteRun(
