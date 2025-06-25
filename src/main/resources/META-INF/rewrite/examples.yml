@@ -43,38 +43,6 @@ examples:
           }
       }
     language: java
-- description: ''
-  sources:
-  - before: |
-      import io.micrometer.core.instrument.MeterRegistry;
-      import io.micrometer.core.instrument.Timer;
-
-      import java.util.function.Supplier;
-
-      class Test {
-          private MeterRegistry registry;
-
-          void test(Supplier<String> arg) {
-              String result = Timer.builder("my.timer")
-                      .register(registry)
-                      .record(arg);
-          }
-      }
-    after: |
-      import io.micrometer.observation.Observation;
-      import io.micrometer.observation.ObservationRegistry;
-
-      import java.util.function.Supplier;
-
-      class Test {
-          private ObservationRegistry registry;
-
-          void test(Supplier<String> arg) {
-              String result = Observation.createNotStarted("my.timer", registry)
-                      .observe(arg);
-          }
-      }
-    language: java
 ---
 type: specs.openrewrite.org/v1beta/example
 recipeName: org.openrewrite.micrometer.UpgradeMicrometer
