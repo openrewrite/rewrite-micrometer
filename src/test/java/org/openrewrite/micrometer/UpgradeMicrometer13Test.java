@@ -31,8 +31,8 @@ class UpgradeMicrometer13Test implements RewriteTest {
           "org.openrewrite.micrometer.UpgradeMicrometer_1_13");
     }
 
-    @Test
     @DocumentExample
+    @Test
     void shouldChangePackage() {
         // language=java
         rewriteRun(

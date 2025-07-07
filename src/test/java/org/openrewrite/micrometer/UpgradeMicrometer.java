@@ -37,8 +37,8 @@ class UpgradeMicrometer implements RewriteTest {
 
     @Nested
     class Dependencies {
-        @Test
         @DocumentExample
+        @Test
         void maven() {
             rewriteRun(
               pomXml(

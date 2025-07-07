@@ -65,8 +65,8 @@ class MicrometerPrometheusCompatabilityTest {
         }
     }
 
-    @ParameterizedTest
     @ArgumentsSource(CounterArguments.class)
+    @ParameterizedTest
     void counters(CollectorRegistry registry, Metric metric) {
         metric.observe(1);
         assertThat(get(registry, "gets", "status", "200")).isEqualTo(1.0);
@@ -96,8 +96,8 @@ class MicrometerPrometheusCompatabilityTest {
         }
     }
 
-    @ParameterizedTest
     @ArgumentsSource(GaugeArguments.class)
+    @ParameterizedTest
     void gauges(CollectorRegistry registry, Metric metric) {
         metric.observe(20.0);
         assertThat(get(registry, "thread_count", "state", "running")).isEqualTo(20.0);
@@ -133,8 +133,8 @@ class MicrometerPrometheusCompatabilityTest {
         }
     }
 
-    @ParameterizedTest
     @ArgumentsSource(SummaryArguments.class)
+    @ParameterizedTest
     void summaries(CollectorRegistry registry, Metric metric) {
         metric.observe(100.0);
         assertThat(summaryMean(registry, "status", "200")).isEqualTo(100.0);
