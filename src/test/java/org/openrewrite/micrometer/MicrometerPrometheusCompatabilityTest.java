@@ -34,11 +34,14 @@ import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 
 import java.time.Duration;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 import java.util.Enumeration;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
+import static java.util.Collections.list;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class MicrometerPrometheusCompatabilityTest {
@@ -424,7 +427,7 @@ class MicrometerPrometheusCompatabilityTest {
     @Nullable Sample getSample(CollectorRegistry registry, String name, Tags labels,
                                @Nullable String sampleName) {
         Enumeration<Collector.MetricFamilySamples> mfs = registry.metricFamilySamples();
-        Collector.MetricFamilySamples filteredSamples = Collections.list(mfs).stream()
+        Collector.MetricFamilySamples filteredSamples = list(mfs).stream()
           .filter(it -> Objects.equals(it.name, name) ||
                         (it.type == Collector.Type.COUNTER && Objects.equals(it.name + "_total", name)))
           .findFirst()
@@ -459,7 +462,7 @@ class MicrometerPrometheusCompatabilityTest {
     }
 
     Stream<Sample> getAllSamples(CollectorRegistry registry) {
-        return Collections.list(registry.metricFamilySamples()).stream().flatMap(it -> it.samples.stream());
+        return list(registry.metricFamilySamples()).stream().flatMap(it -> it.samples.stream());
     }
 
     abstract static class MetricArguments implements ArgumentsProvider {
