@@ -35,9 +35,9 @@ import org.junit.jupiter.params.provider.ArgumentsSource;
 
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Objects;
-import java.util.Enumeration;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
