@@ -72,7 +72,7 @@ class MicrometerPrometheusCompatabilityTest {
     @ParameterizedTest
     void counters(CollectorRegistry registry, Metric metric) {
         metric.observe(1);
-        assertThat(get(registry, "gets", "status", "200")).isEqualTo(1.0);
+        assertThat(get(registry, "gets", "status", "200")).isOne();
         metric.observe(1);
         assertThat(get(registry, "gets", "status", "200")).isEqualTo(2.0);
     }
@@ -142,7 +142,7 @@ class MicrometerPrometheusCompatabilityTest {
         metric.observe(100.0);
         assertThat(summaryMean(registry, "status", "200")).isEqualTo(100.0);
         assertThat(summarySum(registry, "status", "200")).isEqualTo(100.0);
-        assertThat(summaryCount(registry, "status", "200")).isEqualTo(1.0);
+        assertThat(summaryCount(registry, "status", "200")).isOne();
 //        assertThat(summaryP50(registry, "status", "200")).isEqualTo(100.0);
 
         metric.observe(99.0);
