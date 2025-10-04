@@ -15,7 +15,7 @@
 type: specs.openrewrite.org/v1beta/example
 recipeName: org.openrewrite.micrometer.TimerToObservation
 examples:
-- description: ''
+- description: '`TimerToObservationTest#recordRunnable`'
   sources:
   - before: |
       import io.micrometer.core.instrument.MeterRegistry;
@@ -47,7 +47,7 @@ examples:
 type: specs.openrewrite.org/v1beta/example
 recipeName: org.openrewrite.micrometer.UpgradeMicrometer
 examples:
-- description: ''
+- description: '`Dependencies#maven`'
   sources:
   - before: |
       <?xml version="1.0" encoding="UTF-8"?>
@@ -71,7 +71,7 @@ examples:
 type: specs.openrewrite.org/v1beta/example
 recipeName: org.openrewrite.micrometer.UpgradeMicrometer_1_13
 examples:
-- description: ''
+- description: '`UpgradeMicrometer13Test#shouldChangePackage`'
   sources:
   - before: |
       import io.micrometer.prometheus.PrometheusConfig;
@@ -92,7 +92,7 @@ examples:
 type: specs.openrewrite.org/v1beta/example
 recipeName: org.openrewrite.micrometer.dropwizard.FindDropwizardMetrics
 examples:
-- description: ''
+- description: '`FindDropwizardMetricsTest#findDropwizardMetrics`'
   sources:
   - before: |
       import com.codahale.metrics.MetricRegistry;
@@ -117,7 +117,7 @@ examples:
 type: specs.openrewrite.org/v1beta/example
 recipeName: org.openrewrite.micrometer.misk.MigrateEmptyLabelMiskCounter
 examples:
-- description: ''
+- description: '`MigrateEmptyLabelMiskCounterTest#migrateEmptyLabel`'
   sources:
   - before: |
       import misk.metrics.v2.Metrics;
@@ -143,7 +143,7 @@ examples:
 type: specs.openrewrite.org/v1beta/example
 recipeName: org.openrewrite.micrometer.misk.NoExplicitEmptyLabelList
 examples:
-- description: ''
+- description: '`NoExplicitEmptyLabelListTest#emptyLabel`'
   sources:
   - before: |
       import misk.metrics.v2.Metrics;
