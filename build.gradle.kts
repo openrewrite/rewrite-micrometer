@@ -31,7 +31,7 @@ dependencies {
     compileOnly("io.micrometer:micrometer-core:${micrometerVersion}")
     compileOnly("io.prometheus:simpleclient:latest.release")
 
-    testImplementation("org.openrewrite:rewrite-java-17")
+    testImplementation("org.openrewrite:rewrite-java-21")
     testImplementation("org.openrewrite:rewrite-test")
     testImplementation("org.openrewrite:rewrite-gradle")
     testImplementation("org.openrewrite:rewrite-maven")
