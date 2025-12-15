@@ -115,8 +115,8 @@ public class TimerToObservation extends Recipe {
                                 parameters.add(0, timerName);
                                 parameters.add(1, registry);
 
-                                maybeAddImport("io.micrometer.observation.Observation");
                                 maybeRemoveImport("io.micrometer.core.instrument.Timer");
+                                maybeAddImport("io.micrometer.observation.Observation");
 
                                 JavaTemplate template = JavaTemplate
                                         .builder("Observation.createNotStarted(#{any(java.lang.String)}, #{any()})" +
