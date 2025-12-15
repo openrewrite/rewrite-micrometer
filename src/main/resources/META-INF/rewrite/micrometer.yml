@@ -16,8 +16,10 @@
 
 ---
 type: specs.openrewrite.org/v1beta/recipe
-name: org.openrewrite.micrometer.UpgradeMicrometer
-displayName: Upgrade Micrometer
-description: This recipe will apply changes commonly needed when migrating Micrometer.
+name: org.openrewrite.micrometer.MicrometerBestPractices
+displayName: Micrometer best practices
+description: >-
+  This recipe will apply a set of best practice refactorings for Micrometer, like adopting `Observations` instead of `Timers`.
 recipeList:
   - org.openrewrite.micrometer.UpgradeMicrometer_1_13
+  - org.openrewrite.micrometer.TimerToObservation
