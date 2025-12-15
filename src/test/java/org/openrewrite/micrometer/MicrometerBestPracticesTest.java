@@ -18,21 +18,17 @@ package org.openrewrite.micrometer;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.openrewrite.DocumentExample;
-import org.openrewrite.config.Environment;
 import org.openrewrite.test.RecipeSpec;
 import org.openrewrite.test.RewriteTest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.openrewrite.maven.Assertions.pomXml;
 
-class UpgradeMicrometer implements RewriteTest {
+class MicrometerBestPracticesTest implements RewriteTest {
 
     @Override
     public void defaults(RecipeSpec spec) {
-        spec.recipe(Environment.builder()
-          .scanRuntimeClasspath("org.openrewrite.micrometer")
-          .build()
-          .activateRecipes("org.openrewrite.micrometer.UpgradeMicrometer"));
+        spec.recipeFromResources("org.openrewrite.micrometer.MicrometerBestPractices");
     }
 
     @Nested
@@ -44,9 +40,7 @@ class UpgradeMicrometer implements RewriteTest {
               pomXml(
                 //language=xml
                 """
-                  <?xml version="1.0" encoding="UTF-8"?>
-                  <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+                  <project>
                     <modelVersion>4.0.0</modelVersion>
                     <groupId>com.example</groupId>
                     <artifactId>demo</artifactId>
@@ -60,12 +54,11 @@ class UpgradeMicrometer implements RewriteTest {
                     </dependencies>
                   </project>
                   """,
-                spec -> spec.after(actual -> {
-                    assertThat(actual)
-                      .as("Any version of Micrometer above 1.10.x")
-                      .containsPattern("<version>1\\.1[1-9]\\.\\d+</version>");
-                    return actual;
-                })
+                spec -> spec.after(actual ->
+                  assertThat(actual)
+                    .as("Any version of Micrometer above 1.10.x")
+                    .containsPattern("<version>1\\.1[1-9]\\.\\d+</version>")
+                    .actual())
               )
             );
         }
