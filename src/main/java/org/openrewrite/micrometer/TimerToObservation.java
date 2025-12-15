@@ -34,12 +34,12 @@ public class TimerToObservation extends Recipe {
 
     @Override
     public String getDisplayName() {
-        return "Convert Micrometer Timer to Observations";
+        return "Convert Micrometer `Timer` to `Observations`";
     }
 
     @Override
     public String getDescription() {
-        return "Convert Micrometer Timer to Observations.";
+        return "Convert Micrometer `Timer` to `Observations` to instrument once, and get multiple benefits out of it.";
     }
 
     @Override
@@ -56,23 +56,24 @@ public class TimerToObservation extends Recipe {
                         )
                 ),
                 new JavaIsoVisitor<ExecutionContext>() {
-                    private final MethodMatcher builderMatcher = new MethodMatcher(OBSERVATION + " builder(String)");
-                    private final MethodMatcher registerMatcher = new MethodMatcher(TIMER + ".Builder register(io.micrometer.observation.ObservationRegistry)");
-                    private final MethodMatcher tagMatcher = new MethodMatcher(TIMER + ".Builder tag(String, String)");
-                    private final MethodMatcher tagsMatcher = new MethodMatcher(TIMER + ".Builder tags(..)");
-                    private final MethodMatcher tagsIterableMatcher = new MethodMatcher(TIMER + ".Builder tags(java.lang.Iterable)");
-
+                    // Changed first in visitCompilationUnit
                     private final ChangeType changeTypeRegistry = new ChangeType("io.micrometer.core.instrument.MeterRegistry", "io.micrometer.observation.ObservationRegistry", null);
                     private final ChangeType changeTypeTimer = new ChangeType("io.micrometer.core.instrument.Timer","io.micrometer.observation.Observation", null);
                     private final ChangeMethodName changeRecord = new ChangeMethodName(OBSERVATION + " record*(..)", "observe", null, null);
 
+                    // Changed later in visitMethodInvocation
+                    private final MethodMatcher builderMatcher = new MethodMatcher(OBSERVATION + " builder(String)");
+                    private final MethodMatcher registerMatcher = new MethodMatcher(OBSERVATION + "$Builder register(io.micrometer.observation.ObservationRegistry)");
+                    private final MethodMatcher tagMatcher = new MethodMatcher(OBSERVATION + "$Builder tag(String, String)");
+                    private final MethodMatcher tagsMatcher = new MethodMatcher(OBSERVATION + "$Builder tags(..)");
+                    private final MethodMatcher tagsIterableMatcher = new MethodMatcher(OBSERVATION + "$Builder tags(java.lang.Iterable)");
+
                     @Override
                     public J.CompilationUnit visitCompilationUnit(J.CompilationUnit compilationUnit, ExecutionContext ctx) {
                         J.CompilationUnit cu = compilationUnit;
-                        cu = (J.CompilationUnit) changeTypeRegistry.getVisitor().visit(cu, ctx);
-                        cu = (J.CompilationUnit) changeTypeTimer.getVisitor().visit(cu, ctx);
-                        cu = (J.CompilationUnit) changeRecord.getVisitor().visit(cu, ctx);
-                        assert cu != null;
+                        cu = (J.CompilationUnit) changeTypeRegistry.getVisitor().visitNonNull(cu, ctx);
+                        cu = (J.CompilationUnit) changeTypeTimer.getVisitor().visitNonNull(cu, ctx);
+                        cu = (J.CompilationUnit) changeRecord.getVisitor().visitNonNull(cu, ctx);
                         return super.visitCompilationUnit(cu, ctx);
                     }
 
@@ -115,8 +116,8 @@ public class TimerToObservation extends Recipe {
                                 parameters.add(0, timerName);
                                 parameters.add(1, registry);
 
-                                maybeAddImport("io.micrometer.observation.Observation");
                                 maybeRemoveImport("io.micrometer.core.instrument.Timer");
+                                maybeAddImport("io.micrometer.observation.Observation");
 
                                 JavaTemplate template = JavaTemplate
                                         .builder("Observation.createNotStarted(#{any(java.lang.String)}, #{any()})" +
@@ -137,7 +138,6 @@ public class TimerToObservation extends Recipe {
                         }
                         return super.visitMethodInvocation(mi, ctx);
                     }
-
                 });
     }
 }
