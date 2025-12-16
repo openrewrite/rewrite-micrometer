@@ -13,6 +13,28 @@
 # limitations under the License.
 ---
 type: specs.openrewrite.org/v1beta/example
+recipeName: org.openrewrite.micrometer.MicrometerBestPractices
+examples:
+- description: '`Dependencies#maven`'
+  sources:
+  - before: |
+      <project>
+        <modelVersion>4.0.0</modelVersion>
+        <groupId>com.example</groupId>
+        <artifactId>demo</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+        <dependencies>
+          <dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-core</artifactId>
+            <version>1.10.10</version>
+          </dependency>
+        </dependencies>
+      </project>
+    path: pom.xml
+    language: xml
+---
+type: specs.openrewrite.org/v1beta/example
 recipeName: org.openrewrite.micrometer.TimerToObservation
 examples:
 - description: '`TimerToObservationTest#recordRunnable`'
@@ -43,30 +65,6 @@ examples:
           }
       }
     language: java
----
-type: specs.openrewrite.org/v1beta/example
-recipeName: org.openrewrite.micrometer.UpgradeMicrometer
-examples:
-- description: '`Dependencies#maven`'
-  sources:
-  - before: |
-      <?xml version="1.0" encoding="UTF-8"?>
-      <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-        <modelVersion>4.0.0</modelVersion>
-        <groupId>com.example</groupId>
-        <artifactId>demo</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
-        <dependencies>
-          <dependency>
-            <groupId>io.micrometer</groupId>
-            <artifactId>micrometer-core</artifactId>
-            <version>1.10.10</version>
-          </dependency>
-        </dependencies>
-      </project>
-    path: pom.xml
-    language: xml
 ---
 type: specs.openrewrite.org/v1beta/example
 recipeName: org.openrewrite.micrometer.UpgradeMicrometer_1_13
