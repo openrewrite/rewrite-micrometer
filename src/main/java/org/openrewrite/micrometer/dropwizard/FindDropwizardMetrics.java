@@ -15,6 +15,7 @@
  */
 package org.openrewrite.micrometer.dropwizard;
 
+import lombok.Getter;
 import org.openrewrite.ExecutionContext;
 import org.openrewrite.Recipe;
 import org.openrewrite.TreeVisitor;
@@ -27,15 +28,11 @@ import org.openrewrite.micrometer.table.DropwizardMetricsInUse;
 public class FindDropwizardMetrics extends Recipe {
     final transient DropwizardMetricsInUse metrics = new DropwizardMetricsInUse(this);
 
-    @Override
-    public String getDisplayName() {
-        return "Find Dropwizard metrics";
-    }
+    @Getter
+    final String displayName = "Find Dropwizard metrics";
 
-    @Override
-    public String getDescription() {
-        return "Find uses of Dropwizard metrics that could be converted to a more modern metrics instrumentation library.";
-    }
+    @Getter
+    final String description = "Find uses of Dropwizard metrics that could be converted to a more modern metrics instrumentation library.";
 
     @Override
     public TreeVisitor<?, ExecutionContext> getVisitor() {

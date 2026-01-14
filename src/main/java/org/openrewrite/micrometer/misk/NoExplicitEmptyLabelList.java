@@ -15,6 +15,7 @@
  */
 package org.openrewrite.micrometer.misk;
 
+import lombok.Getter;
 import org.openrewrite.ExecutionContext;
 import org.openrewrite.Recipe;
 import org.openrewrite.TreeVisitor;
@@ -33,15 +34,11 @@ import static java.util.Collections.emptyList;
 
 public class NoExplicitEmptyLabelList extends Recipe {
 
-    @Override
-    public String getDisplayName() {
-        return "Don't use an explicit empty label list";
-    }
+    @Getter
+    final String displayName = "Don't use an explicit empty label list";
 
-    @Override
-    public String getDescription() {
-        return "`listOf()` is the default argument for the `labels` parameter.";
-    }
+    @Getter
+    final String description = "`listOf()` is the default argument for the `labels` parameter.";
 
     @Override
     public TreeVisitor<?, ExecutionContext> getVisitor() {

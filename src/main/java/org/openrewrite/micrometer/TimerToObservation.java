@@ -15,6 +15,7 @@
  */
 package org.openrewrite.micrometer;
 
+import lombok.Getter;
 import org.openrewrite.ExecutionContext;
 import org.openrewrite.Preconditions;
 import org.openrewrite.Recipe;
@@ -32,15 +33,11 @@ public class TimerToObservation extends Recipe {
     private static final String TIMER = "io.micrometer.core.instrument.Timer";
     private static final String OBSERVATION = "io.micrometer.observation.Observation";
 
-    @Override
-    public String getDisplayName() {
-        return "Convert Micrometer `Timer` to `Observations`";
-    }
+    @Getter
+    final String displayName = "Convert Micrometer `Timer` to `Observations`";
 
-    @Override
-    public String getDescription() {
-        return "Convert Micrometer `Timer` to `Observations` to instrument once, and get multiple benefits out of it.";
-    }
+    @Getter
+    final String description = "Convert Micrometer `Timer` to `Observations` to instrument once, and get multiple benefits out of it.";
 
     @Override
     public TreeVisitor<?, ExecutionContext> getVisitor() {

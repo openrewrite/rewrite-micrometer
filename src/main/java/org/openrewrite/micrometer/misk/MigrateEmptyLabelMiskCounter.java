@@ -17,6 +17,7 @@ package org.openrewrite.micrometer.misk;
 
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.Metrics;
+import lombok.Getter;
 import org.openrewrite.ExecutionContext;
 import org.openrewrite.Preconditions;
 import org.openrewrite.Recipe;
@@ -34,15 +35,11 @@ import static org.openrewrite.java.template.Semantics.expression;
 
 public class MigrateEmptyLabelMiskCounter extends Recipe {
 
-    @Override
-    public String getDisplayName() {
-        return "Migrate Misk counter to Micrometer";
-    }
+    @Getter
+    final String displayName = "Migrate Misk counter to Micrometer";
 
-    @Override
-    public String getDescription() {
-        return "Convert a Misk (Prometheus) counter to a Micrometer counter.";
-    }
+    @Getter
+    final String description = "Convert a Misk (Prometheus) counter to a Micrometer counter.";
 
     @Override
     public List<Recipe> getRecipeList() {
