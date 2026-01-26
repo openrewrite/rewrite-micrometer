@@ -39,7 +39,7 @@ dependencies {
     testImplementation("org.openrewrite:rewrite-test")
     testImplementation("org.openrewrite:rewrite-kotlin")
 
-    testImplementation("org.junit.jupiter:junit-jupiter-engine:5.13.3")
+    testImplementation("org.junit.jupiter:junit-jupiter-engine:5.14.2")
 
     testImplementation("io.micrometer:micrometer-registry-prometheus:${micrometerVersion}")
     testImplementation("com.google.guava:guava:latest.release")
