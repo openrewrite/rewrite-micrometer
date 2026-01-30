@@ -20,6 +20,8 @@ name: org.openrewrite.micrometer.MicrometerBestPractices
 displayName: Micrometer best practices
 description: >-
   This recipe will apply a set of best practice refactorings for Micrometer, like adopting `Observations` instead of `Timers`.
+preconditions:
+  - org.openrewrite.Singleton
 recipeList:
   - org.openrewrite.micrometer.UpgradeMicrometer_1_13
   - org.openrewrite.micrometer.TimerToObservation

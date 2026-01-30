@@ -19,6 +19,8 @@ type: specs.openrewrite.org/v1beta/recipe
 name: org.openrewrite.micrometer.misk.MigrateMiskToMicrometer
 displayName: Migrate Misk metrics to Micrometer
 description: This recipe will move Misk metrics to Micrometer, where that is possible to do without a loss of fidelity.
+preconditions:
+  - org.openrewrite.Singleton
 recipeList:
   - org.openrewrite.micrometer.misk.NoExplicitEmptyLabelList
   - org.openrewrite.micrometer.misk.MigrateEmptyLabelMiskCounter
