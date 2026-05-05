@@ -7,6 +7,7 @@ group = "org.openrewrite.recipe"
 description = "Micrometer Migration"
 
 recipeDependencies {
+    parserClasspath("io.dropwizard.metrics:metrics-core:4.2.23")
     parserClasspath("io.micrometer:micrometer-commons:1.11.3")
     parserClasspath("io.micrometer:micrometer-core:1.11.3")
     parserClasspath("io.micrometer:micrometer-observation:1.11.3")
@@ -25,8 +26,6 @@ dependencies {
         exclude("com.google.auto.service", "auto-service-annotations")
         exclude("io.github.eisop","dataflow-errorprone")
     }
-
-    implementation("io.dropwizard.metrics:metrics-core:4.2.23")
 
     compileOnly("io.micrometer:micrometer-core:${micrometerVersion}")
     compileOnly("io.prometheus:simpleclient:latest.release")
