@@ -23,7 +23,7 @@ import org.openrewrite.micrometer.table.DropwizardMetricsInUse;
 import org.openrewrite.test.RecipeSpec;
 import org.openrewrite.test.RewriteTest;
 
-import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.openrewrite.java.Assertions.java;
 
 class FindDropwizardMetricsTest implements RewriteTest {
