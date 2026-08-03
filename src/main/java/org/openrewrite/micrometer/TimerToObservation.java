@@ -121,7 +121,10 @@ public class TimerToObservation extends Recipe {
                                                 String.join("", builder))
                                         .contextSensitive()
                                         .javaParser(JavaParser.fromJavaVersion()
-                                                .classpathFromResources(ctx, "micrometer-observation", "micrometer-commons", "micrometer-core"))
+                                                .classpathFromResources(ctx,
+                                                        "micrometer-observation",
+                                                        "micrometer-commons",
+                                                        "micrometer-core"))
                                         .imports("io.micrometer.observation.Observation")
                                         .imports("io.micrometer.common.KeyValues")
                                         .imports("io.micrometer.core.instrument.Tag")
