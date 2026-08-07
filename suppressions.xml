@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
+
+    <suppress>
+        <notes><![CDATA[
+        file name: simpleclient_tracer_otel_agent-0.16.0.jar
+        severity: HIGH
+        reason: FALSE POSITIVE (cross-language CPE match). io.prometheus:simpleclient_tracer_otel_agent
+        is the Prometheus Java simpleclient's OpenTelemetry-agent tracing-context shim — a tiny
+        adapter that lets Prometheus exemplars carry an OTel trace_id when an OTel agent is on the
+        classpath. It is not an OpenTelemetry SDK. dependency-check name-matches the "otel" token
+        in the artifact onto OpenTelemetry SDK CPEs in unrelated language ecosystems. The cited
+        CVEs are all about OTel SDK implementations in other languages:
+          - CVE-2023-43810  / GHSA-5rv5-6h4r-h22v — opentelemetry-python-contrib (Python)
+          - CVE-2023-45142                         — opentelemetry-go semconv (Go)
+          - CVE-2023-47108                         — opentelemetry-go-contrib (Go)
+          - CVE-2026-39882  / GHSA-w8rr-5gcm-pp58 — opentelemetry-go exporters/otlp (Go)
+          - CVE-2026-40894                         — opentelemetry-dotnet (.NET)
+          - CVE-2026-41078  / GHSA-38h3-2333-qx47 — opentelemetry-dotnet (.NET)
+        None apply to the Java Prometheus client. Structural FP — won't resolve unless NVD
+        restructures the CPEs or dep-check honors target_sw. Same block landed in moderne-saas
+        (https://github.com/moderneinc/moderne-saas/pull/1032) covering the canonical reasoning.
+        Flagged on this repo in moderneinc/dependency-vulnerability-reports#1081.
+        ]]></notes>
+        <packageUrl regex="true">^pkg:maven/io\.prometheus/simpleclient_tracer_otel_agent@.*$</packageUrl>
+        <cve>CVE-2023-43810</cve>
+        <cve>CVE-2023-45142</cve>
+        <cve>CVE-2023-47108</cve>
+        <cve>CVE-2026-39882</cve>
+        <cve>CVE-2026-40894</cve>
+        <cve>CVE-2026-41078</cve>
+    </suppress>
+</suppressions>
