@@ -20,8 +20,8 @@ dependencies {
     implementation("org.openrewrite:rewrite-java")
     implementation("org.openrewrite.recipe:rewrite-java-dependencies:$rewriteVersion")
 
-    annotationProcessor("org.openrewrite:rewrite-templating:latest.integration")
-    implementation("org.openrewrite:rewrite-templating:latest.integration")
+    annotationProcessor("org.openrewrite:rewrite-templating:$rewriteVersion")
+    implementation("org.openrewrite:rewrite-templating:$rewriteVersion")
     compileOnly("com.google.errorprone:error_prone_core:2.+") {
         exclude("com.google.auto.service", "auto-service-annotations")
         exclude("io.github.eisop","dataflow-errorprone")
