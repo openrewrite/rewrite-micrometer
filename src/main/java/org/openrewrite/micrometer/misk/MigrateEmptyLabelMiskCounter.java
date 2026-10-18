@@ -16,7 +16,6 @@
 package org.openrewrite.micrometer.misk;
 
 import io.micrometer.core.instrument.Counter;
-import io.micrometer.core.instrument.Metrics;
 import lombok.Getter;
 import org.openrewrite.ExecutionContext;
 import org.openrewrite.Preconditions;
@@ -67,7 +66,7 @@ public class MigrateEmptyLabelMiskCounter extends Recipe {
                     }
                     m = expression(
                             this, "micrometerCounter",
-                            (String name, String help) -> Counter.builder(name).description(help).register(Metrics.globalRegistry)
+                            (String name, String help) -> Counter.builder(name).description(help).register(io.micrometer.core.instrument.Metrics.globalRegistry)
                     ).build().apply(getCursor(),
                             method.getCoordinates().replace(),
                             method.getArguments().get(0),
