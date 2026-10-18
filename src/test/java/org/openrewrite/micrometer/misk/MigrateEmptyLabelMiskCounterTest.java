@@ -55,7 +55,7 @@ class MigrateEmptyLabelMiskCounterTest implements RewriteTest {
 
               class Test {
                 void test(Metrics metrics) {
-                    Counter.builder("counter").description("description").register(Metrics.globalRegistry);
+                    Counter.builder("counter").description("description").register(io.micrometer.core.instrument.Metrics.globalRegistry);
                 }
               }
               """
