@@ -73,6 +73,7 @@ public class MigrateEmptyLabelMiskCounter extends Recipe {
                             method.getArguments().get(1));
 
                     maybeRemoveImport("misk.metrics.v2.Metrics");
+                    maybeRemoveImport("kotlin.collections.CollectionsKt.listOf");
                     maybeAddImport("io.micrometer.core.instrument.Counter");
                 }
                 return m;

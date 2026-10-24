@@ -66,6 +66,7 @@ public class NoExplicitEmptyLabelList extends Recipe {
                     if (methodType != null) {
                         methodType = methodType.withParameterNames(emptyList()).withParameterTypes(emptyList());
                     }
+                    maybeRemoveImport("kotlin.collections.CollectionsKt.listOf");
                     return method
                             .withArguments(ListUtils.map(method.getArguments(), (i, a) -> i == 2 ? null : a))
                             .withMethodType(methodType)

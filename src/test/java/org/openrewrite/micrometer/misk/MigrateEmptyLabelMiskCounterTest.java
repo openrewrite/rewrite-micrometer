@@ -51,7 +51,6 @@ class MigrateEmptyLabelMiskCounterTest implements RewriteTest {
             """
               import io.micrometer.core.instrument.Counter;
               import misk.metrics.v2.Metrics;
-              import static kotlin.collections.CollectionsKt.listOf;
 
               class Test {
                 void test(Metrics metrics) {
