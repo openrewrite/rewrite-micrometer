@@ -17,6 +17,7 @@ package org.openrewrite.micrometer.misk;
 
 import org.junit.jupiter.api.Test;
 import org.openrewrite.DocumentExample;
+import org.openrewrite.InMemoryExecutionContext;
 import org.openrewrite.java.JavaParser;
 import org.openrewrite.test.RecipeSpec;
 import org.openrewrite.test.RewriteTest;
@@ -29,7 +30,7 @@ class MigrateEmptyLabelMiskCounterTest implements RewriteTest {
     public void defaults(RecipeSpec spec) {
         spec.recipe(new MigrateEmptyLabelMiskCounter())
           .parser(JavaParser.fromJavaVersion()
-            .classpath("misk-metrics", "kotlin-reflect", "kotlin-stdlib"));
+            .classpathFromResources(new InMemoryExecutionContext(), "misk-metrics", "kotlin-stdlib-1"));
     }
 
     @DocumentExample

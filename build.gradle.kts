@@ -11,6 +11,8 @@ recipeDependencies {
     parserClasspath("io.micrometer:micrometer-commons:1.11.3")
     parserClasspath("io.micrometer:micrometer-core:1.11.3")
     parserClasspath("io.micrometer:micrometer-observation:1.11.3")
+    parserClasspath("com.squareup.misk:misk-metrics:2023.09.27.194750-c3aa143")
+    parserClasspath("org.jetbrains.kotlin:kotlin-stdlib:1.9.0")
 }
 
 val rewriteVersion = rewriteRecipe.rewriteVersion.get()
@@ -40,8 +42,4 @@ dependencies {
 
     testImplementation("io.micrometer:micrometer-registry-prometheus:${micrometerVersion}")
     testImplementation("com.google.guava:guava:latest.release")
-
-    testRuntimeOnly("org.jetbrains.kotlin:kotlin-stdlib-common:1.9.0")
-    testRuntimeOnly("org.jetbrains.kotlin:kotlin-reflect:1.9.0")
-    testRuntimeOnly("com.squareup.misk:misk-metrics:2023.09.27.194750-c3aa143")
 }
