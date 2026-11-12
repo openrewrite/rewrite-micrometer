@@ -20,6 +20,7 @@ val micrometerVersion = "1.12.+"
 dependencies {
     implementation(platform("org.openrewrite:rewrite-bom:$rewriteVersion"))
     implementation("org.openrewrite:rewrite-java")
+    implementation("org.openrewrite:rewrite-kotlin")
     implementation("org.openrewrite.recipe:rewrite-java-dependencies:$rewriteVersion")
 
     annotationProcessor("org.openrewrite:rewrite-templating:$rewriteVersion")
@@ -38,7 +39,6 @@ dependencies {
     testImplementation("org.openrewrite:rewrite-maven")
 
     testImplementation("org.openrewrite:rewrite-test")
-    testImplementation("org.openrewrite:rewrite-kotlin")
 
     testImplementation("io.micrometer:micrometer-registry-prometheus:${micrometerVersion}")
     testImplementation("com.google.guava:guava:latest.release")

@@ -19,13 +19,12 @@ import lombok.Getter;
 import org.openrewrite.ExecutionContext;
 import org.openrewrite.Preconditions;
 import org.openrewrite.Recipe;
-import org.openrewrite.SourceFile;
 import org.openrewrite.TreeVisitor;
 import org.openrewrite.internal.ListUtils;
-import org.openrewrite.java.JavaIsoVisitor;
 import org.openrewrite.java.MethodMatcher;
 import org.openrewrite.java.search.UsesMethod;
 import org.openrewrite.java.tree.J;
+import org.openrewrite.kotlin.KotlinIsoVisitor;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -37,7 +36,7 @@ public class NoExplicitEmptyLabelList extends Recipe {
     final String displayName = "Don't use an explicit empty label list";
 
     @Getter
-    final String description = "`listOf()` is the default argument for the `labels` parameter.";
+    final String description = "In Kotlin, `listOf()` is the default argument for the `labels` parameter.";
 
     private static final MethodMatcher METRIC = new MethodMatcher("misk.metrics.v2.Metrics *(..)");
     private static final Set<String> WITH_LABELS_THIRD = new HashSet<>(Arrays.asList("counter", "gauge", "peakGauge"));
@@ -45,14 +44,8 @@ public class NoExplicitEmptyLabelList extends Recipe {
 
     @Override
     public TreeVisitor<?, ExecutionContext> getVisitor() {
-        return Preconditions.check(new UsesMethod<>(METRIC), new JavaIsoVisitor<ExecutionContext>() {
-            @Override
-            public boolean isAcceptable(SourceFile sourceFile, ExecutionContext ctx) {
-                // Only Kotlin has the default arguments that let a call leave out its labels
-                String path = sourceFile.getSourcePath().toString();
-                return (path.endsWith(".kt") || path.endsWith(".kts")) && super.isAcceptable(sourceFile, ctx);
-            }
-
+        // Only Kotlin has the default arguments that let a call leave out its labels
+        return Preconditions.check(new UsesMethod<>(METRIC), new KotlinIsoVisitor<ExecutionContext>() {
             @Override
             public J.MethodInvocation visitMethodInvocation(J.MethodInvocation method, ExecutionContext ctx) {
                 J.MethodInvocation mi = super.visitMethodInvocation(method, ctx);
