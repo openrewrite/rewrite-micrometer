@@ -15,11 +15,11 @@
  */
 package org.openrewrite.micrometer.misk;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.openrewrite.DocumentExample;
 import org.openrewrite.InMemoryExecutionContext;
 import org.openrewrite.java.JavaParser;
+import org.openrewrite.kotlin.KotlinParser;
 import org.openrewrite.test.RecipeSpec;
 import org.openrewrite.test.RewriteTest;
 
@@ -38,8 +38,52 @@ class NoExplicitEmptyLabelListTest implements RewriteTest {
     @DocumentExample
     @Test
     void emptyLabel() {
-        //language=java
         rewriteRun(
+          spec -> spec.parser(KotlinParser.builder()
+            .classpathFromResources(new InMemoryExecutionContext(), "misk-metrics", "kotlin-stdlib-1")),
+          //language=kotlin
+          kotlin(
+            """
+              import misk.metrics.v2.Metrics
+              fun test(metrics: Metrics) {
+                  metrics.counter("counter", "description", listOf())
+                  metrics.gauge("gauge", "description", listOf())
+                  metrics.peakGauge("peakGauge", "description", listOf())
+              }
+              """,
+            """
+              import misk.metrics.v2.Metrics
+              fun test(metrics: Metrics) {
+                  metrics.counter("counter", "description")
+                  metrics.gauge("gauge", "description")
+                  metrics.peakGauge("peakGauge", "description")
+              }
+              """
+          )
+        );
+    }
+
+    @Test
+    void labelsKept() {
+        rewriteRun(
+          spec -> spec.parser(KotlinParser.builder()
+            .classpathFromResources(new InMemoryExecutionContext(), "misk-metrics", "kotlin-stdlib-1")),
+          //language=kotlin
+          kotlin(
+            """
+              import misk.metrics.v2.Metrics
+              fun test(metrics: Metrics) {
+                  metrics.counter("counter", "description", listOf("label"))
+              }
+              """
+          )
+        );
+    }
+
+    @Test
+    void javaCallKeepsItsLabels() {
+        rewriteRun(
+          //language=java
           java(
             """
               import misk.metrics.v2.Metrics;
@@ -48,42 +92,7 @@ class NoExplicitEmptyLabelListTest implements RewriteTest {
               class Test {
                 void test(Metrics metrics) {
                     metrics.counter("counter", "description", listOf());
-                    metrics.gauge("gauge", "description", listOf());
-                    metrics.peakGauge("peakGauge", "description", listOf());
                 }
-              }
-              """,
-            """
-              import misk.metrics.v2.Metrics;
-
-              class Test {
-                void test(Metrics metrics) {
-                    metrics.counter("counter", "description");
-                    metrics.gauge("gauge", "description");
-                    metrics.peakGauge("peakGauge", "description");
-                }
-              }
-              """
-          )
-        );
-    }
-
-    @Disabled
-    @Test
-    void emptyLabelKt() {
-        //language=kotlin
-        rewriteRun(
-          kotlin(
-            """
-              import misk.metrics.v2.Metrics
-              fun test(metrics: Metrics) {
-                  metrics.counter("counter", "desc", listOf())
-              }
-              """,
-            """
-              import misk.metrics.v2.Metrics
-              fun test(metrics: Metrics) {
-                  metrics.counter("counter", "desc")
               }
               """
           )

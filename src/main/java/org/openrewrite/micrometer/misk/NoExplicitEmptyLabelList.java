@@ -16,22 +16,19 @@
 package org.openrewrite.micrometer.misk;
 
 import lombok.Getter;
-import org.jspecify.annotations.Nullable;
 import org.openrewrite.ExecutionContext;
+import org.openrewrite.Preconditions;
 import org.openrewrite.Recipe;
 import org.openrewrite.TreeVisitor;
 import org.openrewrite.internal.ListUtils;
-import org.openrewrite.java.JavaIsoVisitor;
-import org.openrewrite.java.JavaParser;
-import org.openrewrite.java.JavaTemplate;
+import org.openrewrite.java.MethodMatcher;
+import org.openrewrite.java.search.UsesMethod;
 import org.openrewrite.java.tree.J;
-import org.openrewrite.java.tree.JavaType;
-import org.openrewrite.java.tree.TypeUtils;
+import org.openrewrite.kotlin.KotlinIsoVisitor;
 
 import java.util.Arrays;
-import java.util.List;
-
-import static java.util.Collections.emptyList;
+import java.util.HashSet;
+import java.util.Set;
 
 public class NoExplicitEmptyLabelList extends Recipe {
 
@@ -39,51 +36,25 @@ public class NoExplicitEmptyLabelList extends Recipe {
     final String displayName = "Don't use an explicit empty label list";
 
     @Getter
-    final String description = "`listOf()` is the default argument for the `labels` parameter.";
+    final String description = "In Kotlin, `listOf()` is the default argument for the `labels` parameter.";
+
+    private static final MethodMatcher METRIC = new MethodMatcher("misk.metrics.v2.Metrics *(..)");
+    private static final Set<String> WITH_LABELS_THIRD = new HashSet<>(Arrays.asList("counter", "gauge", "peakGauge"));
+    private static final MethodMatcher LIST_OF = new MethodMatcher("kotlin.collections.CollectionsKt listOf()");
 
     @Override
     public TreeVisitor<?, ExecutionContext> getVisitor() {
-        return new JavaIsoVisitor<ExecutionContext>() {
-            @Nullable
-            List<JavaTemplate> hasEmptyLabel;
-
+        // Only Kotlin has the default arguments that let a call leave out its labels
+        return Preconditions.check(new UsesMethod<>(METRIC), new KotlinIsoVisitor<ExecutionContext>() {
             @Override
             public J.MethodInvocation visitMethodInvocation(J.MethodInvocation method, ExecutionContext ctx) {
-                if (method.getSelect() != null &&
-                    TypeUtils.isOfClassType(method.getSelect().getType(), "misk.metrics.v2.Metrics") &&
-                    hasEmptyLabel(ctx).stream().anyMatch(tmpl -> tmpl.matches(getCursor()))) {
-                    JavaType.Method methodType = method.getMethodType();
-                    if (methodType != null) {
-                        methodType = methodType.withParameterNames(emptyList()).withParameterTypes(emptyList());
-                    }
-                    maybeRemoveImport("kotlin.collections.CollectionsKt.listOf");
-                    return method
-                            .withArguments(ListUtils.map(method.getArguments(), (i, a) -> i == 2 ? null : a))
-                            .withMethodType(methodType)
-                            .withName(method.getName().withType(methodType));
+                J.MethodInvocation mi = super.visitMethodInvocation(method, ctx);
+                if (METRIC.matches(mi) && WITH_LABELS_THIRD.contains(mi.getSimpleName()) &&
+                    mi.getArguments().size() == 3 && LIST_OF.matches(mi.getArguments().get(2))) {
+                    return mi.withArguments(ListUtils.map(mi.getArguments(), (i, a) -> i == 2 ? null : a));
                 }
-                return super.visitMethodInvocation(method, ctx);
+                return mi;
             }
-
-            private List<JavaTemplate> hasEmptyLabel(ExecutionContext ctx) {
-                if (hasEmptyLabel == null) {
-                    JavaParser.Builder<?, ?> parser = JavaParser.fromJavaVersion().classpathFromResources(ctx, "misk-metrics", "kotlin-stdlib-1");
-                    hasEmptyLabel = Arrays.asList(
-                            JavaTemplate.builder("#{m:any(misk.metrics.v2.Metrics)}.counter(#{s:any(java.lang.String)}, #{s1:any(java.lang.String)}, listOf())")
-                                    .staticImports("kotlin.collections.CollectionsKt.listOf")
-                                    .javaParser(parser)
-                                    .build(),
-                            JavaTemplate.builder("#{m:any(misk.metrics.v2.Metrics)}.gauge(#{s:any(java.lang.String)}, #{s1:any(java.lang.String)}, listOf())")
-                                    .staticImports("kotlin.collections.CollectionsKt.listOf")
-                                    .javaParser(parser)
-                                    .build(),
-                            JavaTemplate.builder("#{m:any(misk.metrics.v2.Metrics)}.peakGauge(#{s:any(java.lang.String)}, #{s1:any(java.lang.String)}, listOf())")
-                                    .staticImports("kotlin.collections.CollectionsKt.listOf")
-                                    .javaParser(parser)
-                                    .build());
-                }
-                return hasEmptyLabel;
-            }
-        };
+        });
     }
 }
